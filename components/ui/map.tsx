@@ -11,7 +11,6 @@ import {
 } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
-import trees from "@/data/trees";
 import speeds from "@/data/speed";
 
 export default function Dashboard() {
@@ -21,34 +20,12 @@ export default function Dashboard() {
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
-      <div className="h-screen">
+      <div className="w-full h-full">
         <Map
           defaultZoom={9}
           defaultCenter={position}
           mapId={process.env.NEXT_PUBLIC_MAP_ID}
         >
-          <AdvancedMarker
-            position={position}
-            ref={markerRef}
-            onClick={() => setOpen(true)}
-          >
-            <Pin
-              background={"grey"}
-              borderColor={"grey"}
-              glyphColor={"black"}
-            />
-            {open && (
-              <InfoWindow
-                anchor={markerRef.current}
-                onClose={() => setOpen(false)}
-                onCloseClick={() => setOpen(false)}
-                position={position}
-              >
-                <div className="p-4">Hello World</div>
-              </InfoWindow>
-            )}
-          </AdvancedMarker>
-          {/* <Markers points={trees} /> */}
           <Markers points={speeds} />
         </Map>
       </div>
