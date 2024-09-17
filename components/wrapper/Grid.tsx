@@ -4,6 +4,11 @@ import React from "react";
 import { IoGlobe } from "react-icons/io5";
 import MagicButton from "../ui/MagicButton";
 import { BackgroundGradientAnimation } from "../ui/background-gradient-animation";
+import {
+  GlowingStarsBackgroundCard,
+  GlowingStarsDescription,
+  GlowingStarsTitle,
+} from "../ui/glowing-stars";
 
 const Grid = () => {
   const scrollToBottom = () => {
@@ -15,22 +20,7 @@ const Grid = () => {
 
   return (
     <div className="w-full h-2/3 flex md:flex-row flex-col items-center justify-center gap-5 md:gap-10">
-      <div className="w-4/5 md:w-2/5 h-full rounded-3xl bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 hover:scale-95 duration-200 ease-in-out flex flex-col justify-end p-5 gap-5 overflow-clip">
-        <div className="overflow-clip rounded-lg h-full">
-          <BackgroundGradientAnimation
-            
-            interactive
-            size="20%"
-            gradientBackgroundStart="rgba(51, 65, 85, 1)"
-            gradientBackgroundEnd="rgba(2, 6, 23, 1)"
-            firstColor="rgba(51, 65, 85, 1)"
-            secondColor="rgba(51, 65, 85, 0.5)"
-            thirdColor="rgba(51, 65, 85, 0.2)"
-          >
-            {" "}
-          </BackgroundGradientAnimation>
-        </div>
-
+      <GlowingStarsBackgroundCard className="w-4/5 md:w-2/5 h-full rounded-3xl bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 flex flex-col justify-end overflow-clip px-5 pt-5">
         <h3 className="font-bold text-white">
           Report your own network speed and contribute to the community
         </h3>
@@ -41,7 +31,8 @@ const Grid = () => {
           handleClick={scrollToBottom}
           otherClasses="bg-zinc-900 text-left"
         />
-      </div>
+      </GlowingStarsBackgroundCard>
+
       <div className="flex flex-col w-4/5 md:w-2/5 gap-5 md:gap-10 h-full">
         <div className="flex flex-col w-full h-1/2  rounded-3xl bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 align-middle justify-center px-5 gap-3 hover:scale-95 duration-200 ease-in-out">
           <h3 className="mb-4 font-bold text-white">
