@@ -3,8 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  
+  --background: #000319;
   --foreground: #171717;
+  --iw-bg-color: rgba(23, 23, 23, 0.3); /* Semi-transparent background color */
+  --iw-border-color: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* Border color for glass effect */
+  --iw-blur: 10px; /* Blur amount for glassmorphism */
+  --iw-border-radius: 20px; /* Border radius */
+  --iw-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37); /* Box shadow for depth */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -89,4 +100,42 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Main wrapper for the InfoWindow */
+.gm-style-iw {
+  background-color: var(--iw-bg-color) !important;
+  border-radius: var(--iw-border-radius) !important;
+  padding: 0 !important;
+  border: 1px solid var(--iw-border-color) !important;
+  box-shadow: var(--iw-box-shadow) !important;
+  backdrop-filter: blur(var(--iw-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--iw-blur)) !important;
+  overflow: hidden !important;
+}
+
+/* Targeting child divs inside the InfoWindow */
+.gm-style-iw > div {
+  background-color: var(--iw-bg-color) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Additional elements inside the InfoWindow */
+.gm-style-iw .gm-style-iw-d {
+  background-color: var(--iw-bg-color) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Hide the tail entirely to avoid layout issues */
+.gm-style-iw-tc {
+  display: none !important;
+}
+
+/* Hide any SVG used for the tail */
+.gm-style-iw-tc svg {
+  display: none !important;
 }

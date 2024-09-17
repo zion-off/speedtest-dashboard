@@ -5,14 +5,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import SpeedTest from "../wrapper/SpeedTest";
+import { Loader2 } from "lucide-react";
 
 import React, { useState, useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
@@ -27,17 +26,32 @@ type SpeedPointFormData = {
   lng: number | null;
 };
 
-export default function SpeedPointForm() {
+interface ServerLocation {
+  country: string;
+  region: string;
+  city: string;
+  lat: number;
+  lon: number;
+  isp: string;
+}
+
+function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [downloadSpeed, setDownloadSpeed] = useState<number>(0);
+  const [uploadSpeed, setUploadSpeed] = useState<number>(0);
+  const [serverLocation, setServerLocation] = useState<ServerLocation | null>(
+    null
+  );
   const [formData, setFormData] = useState<SpeedPointFormData>({
     isp: "",
     advertised: 0,
-    download: 0,
-    upload: 0,
+    download: downloadSpeed,
+    upload: uploadSpeed,
     lat: null,
     lng: null,
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -61,12 +75,18 @@ export default function SpeedPointForm() {
     }
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
-      [name]: name === "isp" ? value : parseFloat(value),
+      download: downloadSpeed,
+      upload: uploadSpeed,
     }));
+  }, [downloadSpeed, uploadSpeed]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setFormData((values) => ({ ...values, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -76,6 +96,7 @@ export default function SpeedPointForm() {
       return;
     }
     try {
+      setLoading(true);
       const speedPointsCollection = collection(db, "speedPoints");
       await addDoc(speedPointsCollection, formData);
       setFormData({
@@ -86,75 +107,140 @@ export default function SpeedPointForm() {
         lat: null,
         lng: null,
       });
-      console.log("Speed point added successfully!");
+      setSuccess("Speed point added successfully!");
+      setTimeout(() => {
+        onSuccess();
+      }, 2000); // Close the dialog after 2 seconds
     } catch (error) {
       console.error("Error adding speed point:", error);
       setError("Failed to add speed point. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return <div>Loading location data...</div>;
-  }
-
   return (
     <form onSubmit={handleSubmit}>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      <label>
-        ISP:
-        <input type="text" name="isp" value={formData.isp} onChange={handleChange} required />
-      </label>
-      <label>
-        Advertised Speed:
-        <input type="number" name="advertised" value={formData.advertised} onChange={handleChange} required />
-      </label>
-      <label>
-        Download Speed:
-        <input type="number" name="download" value={formData.download} onChange={handleChange} required />
-      </label>
-      <label>
-        Upload Speed:
-        <input type="number" name="upload" value={formData.upload} onChange={handleChange} required />
-      </label>
-      <p>Latitude: {formData.lat !== null ? formData.lat.toFixed(6) : 'Not available'}</p>
-      <p>Longitude: {formData.lng !== null ? formData.lng.toFixed(6) : 'Not available'}</p>
-      <button type="submit" disabled={formData.lat === null || formData.lng === null}>Add Speed Point</button>
+      <div className="flex flex-col gap-4 py-4">
+        <Input
+          type="text"
+          name="isp"
+          value={formData.isp}
+          onChange={handleChange}
+          required
+          placeholder="Your ISP"
+          className="col-span-3"
+        />
+
+        <Input
+          type="number"
+          name="advertised"
+          value={formData.advertised || ""}
+          onChange={handleChange}
+          required
+          placeholder="Advertised Package Speed in Mbps"
+          className="col-span-3"
+        />
+        <div className="flex flex-row gap-2">
+          <Input
+            type="number"
+            name="download"
+            value={downloadSpeed || ""}
+            onChange={handleChange}
+            required
+            placeholder="Download Speed"
+            disabled
+          />
+          <Input
+            type="number"
+            name="upload"
+            value={uploadSpeed || ""}
+            onChange={handleChange}
+            required
+            placeholder="Upload Speed"
+            disabled
+          />
+          <SpeedTest
+            setDownload={setDownloadSpeed}
+            setUpload={setUploadSpeed}
+            setServer={setServerLocation}
+          />
+        </div>
+        {error && <div className="text-red-500">{error}</div>}
+        {success && <div className="text-green-500">{success}</div>}
+        <Button
+          type="submit"
+          disabled={
+            formData.lat === null ||
+            formData.lng === null ||
+            loading ||
+            error !== null ||
+            formData.isp === "" ||
+            formData.advertised === 0 ||
+            uploadSpeed === 0 ||
+            downloadSpeed === 0
+          }
+          variant="ghost"
+          className="bg-gray-900 hover:bg-gray-800 text-slate-200 hover:text-slate-200 font-medium"
+        >
+          {loading ? <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <span className="animate-pulse">Adding</span>
+          </> : "Add speed point"}
+        </Button>
+
+        <div className="text-gray-300 text-sm">
+          <p>
+            <span className="font-semibold">User location</span> Latitude{" "}
+            {formData.lat !== null ? formData.lat.toFixed(6) : "Not available"};
+            Longitude{" "}
+            {formData.lng !== null ? formData.lng.toFixed(6) : "Not available"}
+            {serverLocation && (
+              <>
+                <span className="font-semibold">
+                  {" "}
+                  Speed Test Server Location
+                </span>{" "}
+                {serverLocation.city}, {serverLocation.region},{" "}
+                {serverLocation.country}
+                <span className="font-semibold"> ISP</span> {serverLocation.isp}
+                <span className="font-semibold"> Coordinates</span>{" "}
+                {serverLocation.lat.toFixed(4)}, {serverLocation.lon.toFixed(4)}
+                .
+              </>
+            )}
+          </p>
+        </div>
+      </div>
     </form>
   );
 }
 
 export function TestForm() {
+  const [open, setOpen] = useState(false);
+
+  const handleSuccess = () => {
+    setOpen(false);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Start Speed Test</Button>
+        <Button
+          variant="ghost"
+          className="bg-gray-700 hover:bg-gray-500 text-slate-200 hover:text-slate-200 font-medium"
+        >
+          Report speed
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-md">
         <DialogHeader>
-          <DialogTitle>Add your speed to the databse</DialogTitle>
+          <DialogTitle>Add your speed to the database</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Help your local community pick the best ISP in your area
           </DialogDescription>
         </DialogHeader>
-        <SpeedTest />
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
-          </div>
-        </div>
-        <SpeedPointForm />
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
+        <SpeedPointForm onSuccess={handleSuccess} />
       </DialogContent>
     </Dialog>
   );

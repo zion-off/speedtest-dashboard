@@ -18,10 +18,12 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { getSpeedPoints, SpeedPoint } from "@/data/speed";
 
-export default function Dashboard() {
-  const position = { lat: 23.738570583750423, lng: 90.37807658694683 };
+export default function MapBox() {
+  // Dhaka coordinates for centering the map
+  const position = { lat: 23.8041, lng: 90.4152 };
   const [speeds, setSpeeds] = useState<SpeedPoint[]>([]);
 
+  // Fetch speed points from the database on mount
   useEffect(() => {
     getSpeedPoints().then((speeds) => setSpeeds(speeds));
   }, []);
@@ -30,7 +32,7 @@ export default function Dashboard() {
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
       <div className="w-full h-full">
         <Map
-          defaultZoom={9}
+          defaultZoom={11}
           defaultCenter={position}
           mapId={process.env.NEXT_PUBLIC_MAP_ID}
         >
@@ -48,6 +50,7 @@ type Point = google.maps.LatLngLiteral & {
   download: number;
   upload: number;
 };
+
 type Props = { points: Point[] };
 
 function Markers({ points }: Props) {
@@ -104,7 +107,7 @@ function Markers({ points }: Props) {
     const green = [0, 255, 0];
     const ratio = download / advertised;
     const color = ratio >= 1 ? green : interpolateColors(red, yellow, ratio);
-    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+    return `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.5)`;
   }, []);
 
   const memoizedPoints = useMemo(() => points, [points]);
@@ -150,7 +153,7 @@ const MemoizedMarker = React.memo(
       onClick={() => setOpenInfoWindowKey(point.key)}
     >
       <span
-        className="inline-block w-2 h-2 rounded-full"
+        className="inline-block w-7 h-7 rounded-full backdrop-filter backdrop-blur-sm bg-opacity-10 "
         style={{
           backgroundColor: ratioToColor(point.advertised, point.download),
         }}
@@ -161,8 +164,12 @@ const MemoizedMarker = React.memo(
           onClose={() => setOpenInfoWindowKey(null)}
           onCloseClick={() => setOpenInfoWindowKey(null)}
         >
-          <div className="p-4">
-            <span>{point.isp}</span>
+          <div className="p-4 text-slate-200">
+            <h3 className="font-bold text-lg">{point.isp}</h3>
+            <p>Advertised speed: {point.advertised} Mbps</p>
+            <p>Measured download speed: {point.download} Mbps</p>
+            <p>Measured upload speed: {point.upload} Mbps</p>
+            <p>Speed accuracy: {(point.download / point.advertised) * 100}%</p>
           </div>
         </InfoWindow>
       )}
