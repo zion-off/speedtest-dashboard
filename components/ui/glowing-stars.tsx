@@ -26,7 +26,7 @@ export const GlowingStarsBackgroundCard = ({
         className
       )}
     >
-      <div className="flex justify-center items-center">
+      <div className="md:flex justify-center items-center hidden">
         <Illustration mouseEnter={mouseEnter} />
       </div>
       <div className="flex justify-center items-center">

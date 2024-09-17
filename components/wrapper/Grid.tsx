@@ -19,8 +19,8 @@ const Grid = () => {
   };
 
   return (
-    <div className="w-full h-2/3 flex md:flex-row flex-col items-center justify-center gap-5 md:gap-10">
-      <GlowingStarsBackgroundCard className="w-4/5 md:w-2/5 h-full rounded-3xl bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 flex flex-col justify-end overflow-clip px-5 pt-5">
+    <div className="w-full md:h-2/3 flex md:flex-row flex-col items-center justify-center gap-5 md:gap-10">
+      <GlowingStarsBackgroundCard className="w-4/5 md:w-2/5 md:h-full rounded-3xl bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 flex flex-col justify-end overflow-clip px-5 pt-5">
         <h3 className="font-bold text-white">
           Report your own network speed and contribute to the community
         </h3>
@@ -34,7 +34,7 @@ const Grid = () => {
       </GlowingStarsBackgroundCard>
 
       <div className="flex flex-col w-4/5 md:w-2/5 gap-5 md:gap-10 h-full">
-        <div className="flex flex-col w-full h-1/2  rounded-3xl bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 align-middle justify-center px-5 gap-3 hover:scale-95 duration-200 ease-in-out">
+        <div className="flex flex-col w-full h-1/2  rounded-3xl bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 align-middle justify-center px-5 gap-3 hover:scale-95 duration-200 ease-in-out py-5">
           <h3 className="mb-4 font-bold text-white">
             Colors indicate how well the measured speed matches the advertised
             speed

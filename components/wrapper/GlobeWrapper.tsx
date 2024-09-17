@@ -414,7 +414,7 @@ export function GlobeDemo() {
           className="div items-center justify-center flex"
         >
             <div className="flex flex-col items-center md:w-1/2">
-            <p className="uppercase text-center text-base md:text-lg font-normal text-blue-100 max-w-md mt-2 mx-auto">
+            <p className="uppercase text-center text-base md:text-lg text-blue-100 max-w-md mt-2 mx-auto font-semibold opacity-60">
               Find the best ISP in your area
             </p>
             <h2 className="font-sans font-semibold text-5xl leading-tight max-w-5xl mx-auto text-center tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white/95 to-white flex items-center gap-2 md:gap-8">
