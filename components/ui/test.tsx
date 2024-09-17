@@ -227,12 +227,12 @@ export function TestForm({open, setOpen}: {open: boolean, setOpen: (open: boolea
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="bg-gray-700 hover:bg-gray-500 text-slate-200 hover:text-slate-200 font-medium"
+          className="bg-zinc-700 hover:bg-zinc-600 text-white hover:text-zinc-50 font-medium"
         >
           Report speed
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-white rounded-md">
+      <DialogContent className=" bg-white rounded-md">
         <DialogHeader>
           <DialogTitle>Add your speed to the database</DialogTitle>
           <DialogDescription>

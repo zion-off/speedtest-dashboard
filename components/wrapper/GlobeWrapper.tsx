@@ -2,6 +2,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import { ShootingStars } from "@/components/ui/shooting-stars";
+import { StarsBackground } from "@/components/ui/stars-background";
 
 const World = dynamic(() => import("../ui/globe").then((m) => m.World), {
   ssr: false,
@@ -10,7 +12,7 @@ const World = dynamic(() => import("../ui/globe").then((m) => m.World), {
 export function GlobeDemo() {
   const globeConfig = {
     pointSize: 4,
-    globeColor: "#062056",
+    globeColor: "#101010",
     showAtmosphere: true,
     atmosphereColor: "#FFFFFF",
     atmosphereAltitude: 0.1,
@@ -396,7 +398,7 @@ export function GlobeDemo() {
 
   return (
     <div className="flex flex-row items-center justify-center py-20 h-screen md:h-auto  relative w-full">
-      <div className="max-w-7xl mx-auto w-full relative overflow-hidden h-full md:h-[40rem] px-4">
+      <div className=" mx-auto w-full relative overflow-hidden h-full md:h-[40rem] px-4">
         <motion.div
           initial={{
             opacity: 0,
@@ -415,7 +417,7 @@ export function GlobeDemo() {
             <p className="uppercase text-center text-base md:text-lg font-normal text-blue-100 max-w-md mt-2 mx-auto">
               Find the best ISP in your area
             </p>
-            <h2 className="text-center text-5xl md:text-5xl font-bold text-slate-200">
+            <h2 className="font-sans font-semibold text-5xl leading-tight max-w-5xl mx-auto text-center tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white/95 to-white flex items-center gap-2 md:gap-8">
               User Reported Internet Speeds Across Dhaka
             </h2>
             </div>
@@ -424,13 +426,15 @@ export function GlobeDemo() {
           className="absolute w-full bottom-0 inset-x-0 h-80 pointer-events-none select-none z-40"
           style={{
             background:
-              "linear-gradient(to top, #000319 10%, rgba(0,3,25,0.8) 30%, rgba(0,3,25,0.4) 60%, transparent 100%)",
+              "linear-gradient(to top, #101010 0%, rgba(30, 41, 59, 0.3) 30%, rgba(2, 6, 23, 0.3) 50%, transparent 100%)",
           }}
         />
         <div className="absolute w-full h-full md:h-full z-10">
           <World data={sampleArcs} globeConfig={globeConfig} />
         </div>
       </div>
+      <ShootingStars />
+      <StarsBackground />
     </div>
   );
 }
