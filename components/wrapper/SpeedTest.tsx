@@ -5,9 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 
+interface ServerLocation {
+  country: string;
+  region: string;
+  city: string;
+  lat: number;
+  lon: number;
+  isp: string;
+}
+
 const SpeedTest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState({ downloadSpeed: 0, uploadSpeed: 0 });
+  const [serverLocation, setServerLocation] = useState<ServerLocation | null>(null);
   const [error, setError] = useState('');
 
   const runSpeedTest = async () => {
@@ -21,6 +31,9 @@ const SpeedTest = () => {
       const downloadEnd = Date.now();
       const downloadDuration = (downloadEnd - downloadStart) / 1000; // seconds
       const downloadSpeed = (downloadData.testData.length / downloadDuration / 125000).toFixed(2); // Mbps
+
+      // Set server location
+      setServerLocation(downloadData.serverLocation);
 
       // Upload speed test
       const uploadData = { testData: downloadData.testData };
@@ -69,6 +82,15 @@ const SpeedTest = () => {
           <div className="space-y-2">
             <p>Download Speed: {results.downloadSpeed.toFixed(2)} Mbps</p>
             <p>Upload Speed: {results.uploadSpeed.toFixed(2)} Mbps</p>
+          </div>
+        )}
+
+        {serverLocation && (
+          <div className="mt-4 space-y-1">
+            <p className="font-semibold">Server Location:</p>
+            <p>{serverLocation.city}, {serverLocation.region}, {serverLocation.country}</p>
+            <p>ISP: {serverLocation.isp}</p>
+            <p>Coordinates: {serverLocation.lat.toFixed(4)}, {serverLocation.lon.toFixed(4)}</p>
           </div>
         )}
       </CardContent>
