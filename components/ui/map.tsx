@@ -18,15 +18,18 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { getSpeedPoints, SpeedPoint } from "@/data/speed";
 
-export default function MapBox() {
+export default function MapBox({refresh}: {refresh: boolean}): React.ReactElement {
   // Dhaka coordinates for centering the map
   const position = { lat: 23.8041, lng: 90.4152 };
   const [speeds, setSpeeds] = useState<SpeedPoint[]>([]);
 
+  
+
   // Fetch speed points from the database on mount
   useEffect(() => {
+    if (refresh) return;
     getSpeedPoints().then((speeds) => setSpeeds(speeds));
-  }, []);
+  }, [refresh]);
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
@@ -35,6 +38,7 @@ export default function MapBox() {
           defaultZoom={11}
           defaultCenter={position}
           mapId={process.env.NEXT_PUBLIC_MAP_ID}
+      
         >
           <Markers points={speeds} />
         </Map>
@@ -146,7 +150,7 @@ const MemoizedMarker = React.memo(
     setOpenInfoWindowKey,
     ratioToColor,
     marker,
-  }: MemoizedMarkerProps) => (
+  }: MemoizedMarkerProps): React.ReactElement => (
     <AdvancedMarker
       position={point}
       ref={(marker) => setMarkerRef(marker, point.key)}

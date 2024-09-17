@@ -216,8 +216,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-export function TestForm() {
-  const [open, setOpen] = useState(false);
+export function TestForm({open, setOpen}: {open: boolean, setOpen: (open: boolean) => void}) {
 
   const handleSuccess = () => {
     setOpen(false);
