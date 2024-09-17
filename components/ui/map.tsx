@@ -12,7 +12,6 @@ import {
   Map,
   useMap,
   AdvancedMarker,
-  Pin,
   InfoWindow,
 } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
