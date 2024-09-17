@@ -6,7 +6,7 @@ function generateRandomData(size: number): string {
 }
 
 export async function GET(request: NextRequest) {
-  const testData = generateRandomData(10000000); // 1MB of data
+  const testData = generateRandomData(10000000);
 
   return NextResponse.json({ testData });
 }
