@@ -4,7 +4,7 @@ import Grid from "@/components/wrapper/Grid";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center">
+    <main className="flex flex-col items-center gap-20 md:gap-0">
       <GlobeDemo />
       <div
         className="h-screen w-full py-5 flex items-center"
