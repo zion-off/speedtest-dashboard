@@ -5,7 +5,7 @@ import Grid from "@/components/wrapper/Grid";
 export default function Home() {
   return (
     <main className="flex flex-col items-center">
-      {/* <GlobeDemo />
+      <GlobeDemo />
       <div
         className="h-screen w-full py-5 flex items-center"
         style={{
@@ -14,7 +14,7 @@ export default function Home() {
         }}
       >
         <Grid />
-      </div> */}
+      </div>
       <div className="h-screen py-5" id="dashboard">
         <Dashboard />
       </div>

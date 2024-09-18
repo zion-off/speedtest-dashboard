@@ -83,6 +83,10 @@ const ratioToColor = useCallback((advertised: number, download: number) => {
 }, []);
 ```
 
+#### Clustering
+
+The markers are clustered using the `react-google-maps` library. The `MarkerClusterer` component groups the markers based on the zoom level of the map.
+
 ### Filtering
 
 Dropdown to filter results by ISP.
@@ -94,9 +98,7 @@ for:
 
 - ISP
 - Advertised speed
-- Reported speed
-
-Speed measured and reported using Speedtest.net API.
+- Reported speed (download and upload)
 
 ## Hero section
 

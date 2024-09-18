@@ -183,10 +183,14 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
           variant="ghost"
           className="bg-gray-900 hover:bg-gray-800 text-slate-200 hover:text-slate-200 font-medium"
         >
-          {loading ? <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            <span className="animate-pulse">Adding</span>
-          </> : "Add speed point"}
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span className="animate-pulse">Adding</span>
+            </>
+          ) : (
+            "Add speed point"
+          )}
         </Button>
 
         <div className="text-gray-300 text-sm">
@@ -216,8 +220,13 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-export function TestForm({open, setOpen}: {open: boolean, setOpen: (open: boolean) => void}) {
-
+export function TestForm({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   const handleSuccess = () => {
     setOpen(false);
   };
@@ -227,9 +236,9 @@ export function TestForm({open, setOpen}: {open: boolean, setOpen: (open: boolea
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="bg-zinc-700 hover:bg-zinc-600 text-white hover:text-zinc-50 font-medium"
+          className="font-semibold animate-shimmer items-center justify-center rounded-lg border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 hover:text-white"
         >
-          Report speed
+          Report your speed
         </Button>
       </DialogTrigger>
       <DialogContent className=" bg-white rounded-md">
