@@ -27,9 +27,13 @@ export type SpeedPoint = {
 
 ### Speed Test
 
-User's network speed is testing by generating dummy 10 MB data using a Next.js API route. The frontend requests the speed test endpoint, and measures the time it takes to download the data. It then uploads the same data back to the server to measure the upload speed.
+User's network speed is testing by generating dummy 10 MB data using a Next.js
+API route. The frontend requests the speed test endpoint, and measures the time
+it takes to download the data. It then uploads the same data back to the server
+to measure the upload speed.
 
-It is worth noting that the Speedtest.net API was preferred but was not compatible with the Next.js serverless environment.
+It is worth noting that the Speedtest.net API was preferred but was not
+compatible with the Next.js serverless environment.
 
 ### Markers
 
@@ -98,3 +102,10 @@ Speed measured and reported using Speedtest.net API.
 
 [GitHub Globe](https://ui.aceternity.com/components/github-globe) UI Component
 from Aceternity UI.
+
+# Challenges
+
+It was surprisingly difficult to maintain state between the dropdown menu and
+the map markers. The markers were not updating correctly when the dropdown menu
+was changed. With help from ChatGPT, the issue was resolved by using memoization to prevent unnecessary
+re-renders.

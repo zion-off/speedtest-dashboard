@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import {
   APIProvider,
   Map,
@@ -18,18 +12,35 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { getSpeedPoints, SpeedPoint } from "@/data/speed";
 
-export default function MapBox({refresh}: {refresh: boolean}): React.ReactElement {
+export default function MapBox({
+  refresh,
+  selectedISPs,
+}: {
+  refresh: boolean;
+  selectedISPs: string[];
+}): React.ReactElement {
   // Dhaka coordinates for centering the map
   const position = { lat: 23.8041, lng: 90.4152 };
   const [speeds, setSpeeds] = useState<SpeedPoint[]>([]);
-
-  
+  const [filteredSpeeds, setFilteredSpeeds] = useState<SpeedPoint[]>([]);
 
   // Fetch speed points from the database on mount
   useEffect(() => {
     if (refresh) return;
     getSpeedPoints().then((speeds) => setSpeeds(speeds));
   }, [refresh]);
+
+  // Filter speed points by selected ISPs
+  useEffect(() => {
+    if (selectedISPs.length === 0) {
+      setFilteredSpeeds(speeds); // Show all speeds if no ISP is selected
+    } else {
+      const filtered = speeds.filter((point) =>
+        selectedISPs.includes(point.isp)
+      );
+      setFilteredSpeeds(filtered);
+    }
+  }, [speeds, selectedISPs]);
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
@@ -38,24 +49,15 @@ export default function MapBox({refresh}: {refresh: boolean}): React.ReactElemen
           defaultZoom={11}
           defaultCenter={position}
           mapId={process.env.NEXT_PUBLIC_MAP_ID}
-      
         >
-          <Markers points={speeds} />
+          <Markers points={filteredSpeeds} />
         </Map>
       </div>
     </APIProvider>
   );
 }
 
-type Point = google.maps.LatLngLiteral & {
-  key: string;
-  isp: string;
-  advertised: number;
-  download: number;
-  upload: number;
-};
-
-type Props = { points: Point[] };
+type Props = { points: SpeedPoint[] };
 
 function Markers({ points }: Props) {
   const map = useMap();
@@ -79,20 +81,21 @@ function Markers({ points }: Props) {
 
   const setMarkerRef = useCallback(
     (marker: Marker | null, key: string) => {
-      if (marker && markers[key]) return;
-      if (!marker && !markers[key]) return;
+      // Only update the state if the marker is different from what we already have
       setMarkers((prev) => {
-        if (marker) {
+        if (marker && prev[key] !== marker) {
           return { ...prev, [key]: marker };
-        } else {
+        } else if (!marker && prev[key]) {
           const newMarkers = { ...prev };
           delete newMarkers[key];
           return newMarkers;
         }
+        return prev; // No state update needed if marker already exists or no change
       });
     },
-    [markers]
+    [setMarkers] // Ensure the function is not recreated unnecessarily
   );
+  
 
   const ratioToColor = useCallback((advertised: number, download: number) => {
     const interpolateColors = (
@@ -134,7 +137,7 @@ function Markers({ points }: Props) {
 }
 
 type MemoizedMarkerProps = {
-  point: Point;
+  point: SpeedPoint;
   setMarkerRef: (marker: Marker | null, key: string) => void;
   openInfoWindowKey: string | null;
   setOpenInfoWindowKey: (key: string | null) => void;
@@ -152,7 +155,7 @@ const MemoizedMarker = React.memo(
     marker,
   }: MemoizedMarkerProps): React.ReactElement => (
     <AdvancedMarker
-      position={point}
+      position={{ lat: point.lat, lng: point.lng }}
       ref={(marker) => setMarkerRef(marker, point.key)}
       onClick={() => setOpenInfoWindowKey(point.key)}
     >
