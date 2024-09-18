@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   APIProvider,
   Map,
@@ -10,7 +16,7 @@ import {
 } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
-import { getSpeedPoints, SpeedPoint } from "@/data/speed";
+import { subscribeToSpeedPoints, SpeedPoint } from "@/data/speed";
 
 export default function MapBox({
   refresh,
@@ -24,10 +30,10 @@ export default function MapBox({
   const [speeds, setSpeeds] = useState<SpeedPoint[]>([]);
   const [filteredSpeeds, setFilteredSpeeds] = useState<SpeedPoint[]>([]);
 
-  // Fetch speed points from the database on mount
   useEffect(() => {
     if (refresh) return;
-    getSpeedPoints().then((speeds) => setSpeeds(speeds));
+    const unsubscribe = subscribeToSpeedPoints(setSpeeds);
+    return () => unsubscribe(); // Clean up listener on unmount
   }, [refresh]);
 
   // Filter speed points by selected ISPs
@@ -95,7 +101,6 @@ function Markers({ points }: Props) {
     },
     [setMarkers] // Ensure the function is not recreated unnecessarily
   );
-  
 
   const ratioToColor = useCallback((advertised: number, download: number) => {
     const interpolateColors = (

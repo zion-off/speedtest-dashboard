@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 export type SpeedPoint = {
@@ -11,22 +11,26 @@ export type SpeedPoint = {
   lng: number;
 };
 
-export async function getSpeedPoints(): Promise<SpeedPoint[]> {
+export function subscribeToSpeedPoints(
+  callback: (speedPoints: SpeedPoint[]) => void
+): () => void {
   const speedPointsCollection = collection(db, "speedPoints");
-  const speedPointsSnapshot = await getDocs(speedPointsCollection);
   
-  const formattedPoints: SpeedPoint[] = speedPointsSnapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      key: doc.id,
-      isp: data.isp,
-      advertised: data.advertised,
-      download: data.download,
-      upload: data.upload,
-      lat: data.lat,
-      lng: data.lng,
-    };
+  const unsubscribe = onSnapshot(speedPointsCollection, (snapshot) => {
+    const formattedPoints: SpeedPoint[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        key: doc.id,
+        isp: data.isp,
+        advertised: data.advertised,
+        download: data.download,
+        upload: data.upload,
+        lat: data.lat,
+        lng: data.lng,
+      };
+    });
+    callback(formattedPoints); 
   });
 
-  return formattedPoints;
+  return unsubscribe; 
 }

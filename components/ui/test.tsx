@@ -9,6 +9,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import SpeedTest from "../wrapper/SpeedTest";
 import { Loader2 } from "lucide-react";
@@ -44,6 +53,40 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   const [serverLocation, setServerLocation] = useState<ServerLocation | null>(
     null
   );
+
+  const ISPs = [
+    "Bell",
+    "Match Net",
+    "Link3 Technologies Ltd.",
+    "Aamra Networks Limited",
+    "ADN Telecom Limited",
+    "Agni Systems Limited",
+    "Amber IT Limited",
+    "Bangladesh Internet Exchange Limited (BIEL)",
+    "BDCom Online Limited",
+    "Brac Net Limited",
+    "Carnival Internet",
+    "Dhakacom Limited",
+    "Dhaka Fiber Net Limited",
+    "Fiber@Home Limited",
+    "Infolink Communications Ltd.",
+    "Kloud Technologies Ltd.",
+    "Mango Teleservices Ltd.",
+    "MetroNet Bangladesh Limited",
+    "National IT Limited",
+    "Nexus Telecom Limited",
+    "Ollo Broadband",
+    "Ranks ITT Limited",
+    "Samonline Limited",
+    "Sheba Phone (Pvt.) Ltd.",
+    "Skytel Communications Ltd.",
+    "Summit Communications Ltd.",
+    "Thakral Information Systems Pvt. Ltd.",
+    "Triangle Services Ltd.",
+    "Unique Infoway Limited",
+    "Wintel Limited",
+  ];
+
   const [formData, setFormData] = useState<SpeedPointFormData>({
     isp: "",
     advertised: 0,
@@ -82,6 +125,13 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
       upload: uploadSpeed,
     }));
   }, [downloadSpeed, uploadSpeed]);
+
+  const handleISPChange = (value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      isp: value,
+    }));
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.name;
@@ -122,16 +172,22 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4 py-4">
-        <Input
-          type="text"
-          name="isp"
-          value={formData.isp}
-          onChange={handleChange}
-          required
-          placeholder="Your ISP"
-          className="col-span-3"
-        />
-
+        <Select onValueChange={handleISPChange}>
+          <SelectTrigger className="col-span-3">
+            <SelectValue placeholder="Your ISP" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {ISPs.map((isp) => {
+                return (
+                  <SelectItem key={isp} value={isp}>
+                    {isp}
+                  </SelectItem>
+                );
+              })}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <Input
           type="number"
           name="advertised"
@@ -236,7 +292,7 @@ export function TestForm({
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="font-semibold animate-shimmer items-center justify-center rounded-lg border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 hover:text-white"
+          className="font-semibold animate-shimmer items-center justify-center rounded-lg border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 text-slate-400 transition-colors focus:outline-none focus:ring-2  hover:text-white"
         >
           Report your speed
         </Button>
