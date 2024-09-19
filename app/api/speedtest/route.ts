@@ -24,7 +24,7 @@ async function getServerLocation() {
 }
 
 export async function GET(request: NextRequest) {
-  const testData = generateRandomData(10000000); // 10 MB
+  const testData = generateRandomData(30000000); // 10 MB
   const serverLocation = await getServerLocation();
 
   return NextResponse.json({ testData, serverLocation });
