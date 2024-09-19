@@ -15,7 +15,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Dhaka Speed Test",
-  description: "",
+  description: "Find the best ISP in your area",
 };
 
 export default function RootLayout({
