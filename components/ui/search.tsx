@@ -90,7 +90,7 @@ export default function SearchBar({ onSelectionChange }: SearchBarProps) {
         <Button
           ref={buttonRef}
           variant="default"
-          className="w-full border border-slate-800 bg-[linear-gradient(110deg,#000103,35%,#1e2631,65%,#000103)] px-6 text-slate-300 transition-colors focus:outline-none focus:ring-2  hover:text-white  duration-300 font-semibold"
+          className="w-full border border-slate-800 bg-[#000103] px-6 text-slate-300 transition-colors focus:outline-none focus:ring-2  hover:text-white  duration-300 font-semibold"
         >
           Filter by ISP
         </Button>
