@@ -1,13 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "40mb",
-    },
-  },
-};
-
 // Generate a string of random data
 function generateRandomData(size: number): string {
   return Array(size).fill("0").join("");
