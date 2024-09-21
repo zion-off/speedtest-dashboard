@@ -43,15 +43,13 @@ export async function GET(request: NextRequest) {
   const serverLocation = await getServerLocation();
   const userISP = await getUserISP(request);
 
+  console.log(userISP)
   return NextResponse.json({ testData, serverLocation, userISP });
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { testData } = body;
-
-  // Here we're just acknowledging receipt of the data
-  // In a real-world scenario, you might want to do some validation
 
   return NextResponse.json({ success: true });
 }
