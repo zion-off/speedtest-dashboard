@@ -37,53 +37,58 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
   const runSpeedTest = async () => {
     setIsLoading(true);
     setError("");
+
     try {
-      // Download speed test
-      const downloadStart = Date.now();
-      const downloadResponse = await fetch("/api/speedtest");
-      const downloadData = await downloadResponse.json();
-      const downloadEnd = Date.now();
-      const downloadDuration = (downloadEnd - downloadStart) / 1000; // seconds
-      const downloadSpeed = (
-        downloadData.testData.length /
-        downloadDuration /
-        125000
-      ).toFixed(2); // Mbps
+        // Download speed test
+        const downloadStart = Date.now();
+        const downloadResponse = await fetch("/api/speedtest?type=test");
+        const downloadData = await downloadResponse.json();
+        const downloadEnd = Date.now();
+        const downloadDuration = (downloadEnd - downloadStart) / 1000; // seconds
+        const downloadSpeed = (
+            downloadData.testData.length /
+            downloadDuration /
+            125000
+        ).toFixed(2); // Mbps
 
-      // Set user ISP
-      setUserISP(downloadData.userISP);
-      // Set server location
-      setServerLocation(downloadData.serverLocation);
-      setServer(downloadData.serverLocation);
+        // Set server location and test data
+        setServerLocation(downloadData.serverLocation);
+        setServer(downloadData.serverLocation);
 
-      // Upload speed test
-      const uploadData = { testData: downloadData.testData };
-      const uploadStart = Date.now();
-      await fetch("/api/speedtest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(uploadData),
-      });
-      const uploadEnd = Date.now();
-      const uploadDuration = (uploadEnd - uploadStart) / 1000; // seconds
-      const uploadSpeed = (
-        uploadData.testData.length /
-        uploadDuration /
-        125000
-      ).toFixed(2); // Mbps
+        // Fetch user ISP
+        const ispResponse = await fetch("/api/speedtest?type=isp");
+        const ispData = await ispResponse.json();
+        setUserISP(ispData.userISP);
 
-      setResults({
-        downloadSpeed: parseFloat(downloadSpeed),
-        uploadSpeed: parseFloat(uploadSpeed),
-      });
-      setDownload(parseFloat(downloadSpeed));
-      setUpload(parseFloat(uploadSpeed));
+        // Upload speed test
+        const uploadData = { testData: downloadData.testData };
+        const uploadStart = Date.now();
+        await fetch("/api/speedtest", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(uploadData),
+        });
+        const uploadEnd = Date.now();
+        const uploadDuration = (uploadEnd - uploadStart) / 1000; // seconds
+        const uploadSpeed = (
+            uploadData.testData.length /
+            uploadDuration /
+            125000
+        ).toFixed(2); // Mbps
+
+        setResults({
+            downloadSpeed: parseFloat(downloadSpeed),
+            uploadSpeed: parseFloat(uploadSpeed),
+        });
+        setDownload(parseFloat(downloadSpeed));
+        setUpload(parseFloat(uploadSpeed));
     } catch (err) {
-      setError("Failed to run speed test. Please try again.");
+        setError("Failed to run speed test. Please try again.");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   return (
     <Card className="w-full max-w-md mx-auto">

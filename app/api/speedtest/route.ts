@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '40mb',
+      sizeLimit: "40mb",
     },
   },
 };
@@ -35,6 +35,7 @@ async function getUserISP(request: NextRequest) {
   try {
     const userIP =
       request.ip || request.headers.get("x-forwarded-for")?.split(",")[0] || "";
+
     const response = await fetch(
       `https://api.ipdata.co/${userIP}?api-key=${process.env.IP_DATA_API_KEY}`
     );
@@ -47,12 +48,23 @@ async function getUserISP(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const testData = generateRandomData(25000000); // 30 MB
-  const serverLocation = await getServerLocation();
-  const userISP = await getUserISP(request);
+  const { searchParams } = new URL(request.url);
+  const responseType = searchParams.get("type"); // Determines the type of response
 
-  console.log(userISP)
-  return NextResponse.json({ testData, serverLocation, userISP });
+  if (responseType === "test") {
+    const testData = generateRandomData(25000000); // 25 MB
+    const serverLocation = await getServerLocation();
+    return NextResponse.json({ testData, serverLocation });
+  } else if (responseType === "isp") {
+    const userISP = await getUserISP(request);
+    return NextResponse.json({ userISP });
+  } else {
+    // Return an error for invalid request type
+    return NextResponse.json(
+      { error: "Invalid request type" },
+      { status: 400 }
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
