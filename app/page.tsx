@@ -1,6 +1,7 @@
 import { GlobeDemo } from "@/components/wrapper/GlobeWrapper";
 import Dashboard from "@/components/wrapper/Dashboard";
 import Grid from "@/components/wrapper/Grid";
+import Footer from "@/components/wrapper/Footer";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <div className="h-screen py-5" id="dashboard">
         <Dashboard />
       </div>
+      <Footer />
     </main>
   );
 }

@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import SpeedTest from "../wrapper/SpeedTest";
 import { Loader2 } from "lucide-react";
-
+import { companies } from "@/data/isp";
 import React, { useState, useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -53,39 +53,6 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   const [serverLocation, setServerLocation] = useState<ServerLocation | null>(
     null
   );
-
-  const ISPs = [
-    "Bell",
-    "Match Net",
-    "Link3 Technologies Ltd.",
-    "Aamra Networks Limited",
-    "ADN Telecom Limited",
-    "Agni Systems Limited",
-    "Amber IT Limited",
-    "Bangladesh Internet Exchange Limited (BIEL)",
-    "BDCom Online Limited",
-    "Brac Net Limited",
-    "Carnival Internet",
-    "Dhakacom Limited",
-    "Dhaka Fiber Net Limited",
-    "Fiber@Home Limited",
-    "Infolink Communications Ltd.",
-    "Kloud Technologies Ltd.",
-    "Mango Teleservices Ltd.",
-    "MetroNet Bangladesh Limited",
-    "National IT Limited",
-    "Nexus Telecom Limited",
-    "Ollo Broadband",
-    "Ranks ITT Limited",
-    "Samonline Limited",
-    "Sheba Phone (Pvt.) Ltd.",
-    "Skytel Communications Ltd.",
-    "Summit Communications Ltd.",
-    "Thakral Information Systems Pvt. Ltd.",
-    "Triangle Services Ltd.",
-    "Unique Infoway Limited",
-    "Wintel Limited",
-  ];
 
   const [formData, setFormData] = useState<SpeedPointFormData>({
     isp: "",
@@ -178,7 +145,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {ISPs.map((isp) => {
+              {companies.map((isp) => {
                 return (
                   <SelectItem key={isp} value={isp}>
                     {isp}
