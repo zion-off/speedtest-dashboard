@@ -1,4 +1,7 @@
-# User reported internet speeds in Dhaka
+<img src="./public/banner.png" style="width: auto; max-height: 400px; position: relative; left: 50%; transform: translate(-50%, 0);">
+
+
+# [Dhaka Speed Map](https://speedmap.zzzzion.com/): User reported internet speeds in Dhaka
 
 This project aggregates speed test results submitted by visitors on the site.
 The goal is to map out the difference between speeds advertised by ISPs and the
