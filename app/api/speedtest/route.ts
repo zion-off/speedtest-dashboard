@@ -26,12 +26,27 @@ async function getServerLocation() {
 async function getUserISP(request: NextRequest) {
   try {
     const userIP =
-      request.ip || request.headers.get("x-forwarded-for")?.split(",")[0] || "";
+      request.headers.get("CF-Connecting-IP") ||
+      request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.ip;
+
+    console.log("Detected User IP:", userIP); // Log the detected IP
 
     const response = await fetch(
       `https://api.ipdata.co/${userIP}?api-key=${process.env.IP_DATA_API_KEY}`
     );
+
+    if (!response.ok) {
+      console.error(
+        "Failed to fetch ISP:",
+        response.status,
+        await response.text()
+      );
+      return null;
+    }
+
     const data = await response.json();
+    console.log("ISP Data:", data); // Log the ISP data
     return data.asn.name;
   } catch (error) {
     console.error("Error fetching user ISP:", error);
@@ -41,9 +56,15 @@ async function getUserISP(request: NextRequest) {
 
 // Function to set CORS headers
 const setCorsHeaders = (res: NextResponse) => {
-  res.headers.set('Access-Control-Allow-Origin', 'https://speedmap.zzzzion.com');
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.headers.set(
+    "Access-Control-Allow-Origin",
+    "https://speedmap.zzzzion.com"
+  );
+  res.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
 };
 
 export async function GET(request: NextRequest) {
