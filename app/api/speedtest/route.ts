@@ -39,7 +39,24 @@ async function getUserISP(request: NextRequest) {
   }
 }
 
+// Function to set CORS headers
+const setCorsHeaders = (res: NextResponse) => {
+  res.headers.set('Access-Control-Allow-Origin', 'https://speedmap.zzzzion.com');
+  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+};
+
 export async function GET(request: NextRequest) {
+  const res = NextResponse.json({}); // Initialize response
+
+  // Set CORS headers
+  setCorsHeaders(res);
+
+  // Handle preflight request
+  if (request.method === "OPTIONS") {
+    return res; // Return an empty response for preflight
+  }
+
   const { searchParams } = new URL(request.url);
   const responseType = searchParams.get("type"); // Determines the type of response
 
@@ -60,6 +77,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const res = NextResponse.json({}); // Initialize response
+
+  // Set CORS headers
+  setCorsHeaders(res);
+
+  // Handle preflight request
+  if (request.method === "OPTIONS") {
+    return res; // Return an empty response for preflight
+  }
+
   const body = await request.json();
   const { testData } = body;
 
