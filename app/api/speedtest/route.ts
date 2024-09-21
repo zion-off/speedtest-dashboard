@@ -39,7 +39,7 @@ async function getUserISP(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const testData = generateRandomData(30000000); // 30 MB
+  const testData = generateRandomData(25000000); // 30 MB
   const serverLocation = await getServerLocation();
   const userISP = await getUserISP(request);
 
