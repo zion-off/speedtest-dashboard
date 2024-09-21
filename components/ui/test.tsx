@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea"
 import SpeedTest from "../wrapper/SpeedTest";
 import { Loader2 } from "lucide-react";
 import { companies } from "@/data/isp";
@@ -33,6 +34,7 @@ type SpeedPointFormData = {
   upload: number;
   lat: number | null;
   lng: number | null;
+  note?: string;
 };
 
 interface ServerLocation {
@@ -99,6 +101,13 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
       isp: value,
     }));
   };
+
+  const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({ 
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.name;
@@ -189,6 +198,14 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
             setServer={setServerLocation}
           />
         </div>
+        <Textarea
+          name="note"
+          value={formData.note || ""}
+          onChange={handleNoteChange}
+          required
+          placeholder="What do you like about your ISP?"
+          className="col-span-3"
+        />
         {error && <div className="text-red-500">{error}</div>}
         {success && <div className="text-green-500">{success}</div>}
         <Button

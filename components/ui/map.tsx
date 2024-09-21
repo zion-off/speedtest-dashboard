@@ -176,13 +176,14 @@ const MemoizedMarker = React.memo(
           onClose={() => setOpenInfoWindowKey(null)}
           onCloseClick={() => setOpenInfoWindowKey(null)}
         >
-          <div className="p-4 text-slate-200">
+            <div className="p-4 text-slate-200">
             <h3 className="font-bold text-lg">{point.isp}</h3>
-            <p>Advertised speed: {point.advertised} Mbps</p>
-            <p>Measured download speed: {point.download} Mbps</p>
-            <p>Measured upload speed: {point.upload} Mbps</p>
-            <p>Speed accuracy: {(point.download / point.advertised) * 100}%</p>
-          </div>
+            <p><span className="font-semibold">Advertised speed:</span> {point.advertised} Mbps</p>
+            <p><span className="font-semibold">Measured download speed:</span> {point.download} Mbps</p>
+            <p><span className="font-semibold">Measured upload speed:</span> {point.upload} Mbps</p>
+            <p><span className="font-semibold">Speed accuracy:</span> {Math.floor((point.download / point.advertised) * 100)}%</p>
+            {point.note && <p><span className="font-semibold">Additional feedback:</span> {point.note}</p>}
+            </div>
         </InfoWindow>
       )}
     </AdvancedMarker>

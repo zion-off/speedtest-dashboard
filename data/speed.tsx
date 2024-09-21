@@ -9,6 +9,7 @@ export type SpeedPoint = {
   upload: number;
   lat: number;
   lng: number;
+  note?: string;
 };
 
 export function subscribeToSpeedPoints(
@@ -27,6 +28,7 @@ export function subscribeToSpeedPoints(
         upload: data.upload,
         lat: data.lat,
         lng: data.lng,
+        note: data.note,
       };
     });
     callback(formattedPoints); 

@@ -28,7 +28,6 @@ const page = () => {
         </p>
       </Section>
       <Section title="Privacy Policy">
-        
         <p>
           No identifying information is collected. The only data that is collected is what you  volunteer: your ISP name, location, and speed data. Here's a sneak peek of the backend:
         </p>
