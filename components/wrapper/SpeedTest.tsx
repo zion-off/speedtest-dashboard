@@ -18,12 +18,14 @@ interface SpeedTestProps {
   setDownload: Dispatch<SetStateAction<number>>;
   setUpload: Dispatch<SetStateAction<number>>;
   setServer: Dispatch<SetStateAction<ServerLocation | null>>;
+  setUserISP: Dispatch<SetStateAction<string>>;
 }
 
 const SpeedTest: React.FC<SpeedTestProps> = ({
   setDownload,
   setUpload,
   setServer,
+  setUserISP,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState({ downloadSpeed: 0, uploadSpeed: 0 });
@@ -48,6 +50,8 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
         125000
       ).toFixed(2); // Mbps
 
+      // Set user ISP
+      setUserISP(downloadData.userISP);
       // Set server location
       setServerLocation(downloadData.serverLocation);
       setServer(downloadData.serverLocation);

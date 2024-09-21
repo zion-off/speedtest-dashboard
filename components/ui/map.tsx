@@ -21,13 +21,18 @@ import { subscribeToSpeedPoints, SpeedPoint } from "@/data/speed";
 export default function MapBox({
   refresh,
   selectedISPs,
+  speeds,
+  setSpeeds,
 }: {
   refresh: boolean;
   selectedISPs: string[];
+  speeds: SpeedPoint[];
+  setSpeeds: (speeds: SpeedPoint[]) => void;
+  
 }): React.ReactElement {
   // Dhaka coordinates for centering the map
   const position = { lat: 23.8041, lng: 90.4152 };
-  const [speeds, setSpeeds] = useState<SpeedPoint[]>([]);
+ 
   const [filteredSpeeds, setFilteredSpeeds] = useState<SpeedPoint[]>([]);
 
   useEffect(() => {

@@ -1,6 +1,5 @@
 <img src="./public/banner.png" style="width: auto; max-height: 400px; position: relative; left: 50%; transform: translate(-50%, 0);">
 
-
 # [Dhaka Speed Map](https://speedmap.zzzzion.com/): User reported internet speeds in Dhaka
 
 This project aggregates speed test results submitted by visitors on the site.
@@ -25,6 +24,7 @@ export type SpeedPoint = {
   upload: number; // Reported upload speed in Mbps
   lat: number; // Latitude
   lng: number; // Longitude
+  note: string; // Additional feedback
 };
 ```
 
@@ -37,6 +37,18 @@ to measure the upload speed.
 
 It is worth noting that the Speedtest.net API was preferred but was not
 compatible with the Next.js serverless environment.
+
+### ISP Detection
+
+The user's ISP is detected using the [ipinfo.io](https://ipinfo.io) API.
+
+```ts
+const userIP =
+  request.ip || request.headers.get("x-forwarded-for")?.split(",")[0] || "";
+const response = await fetch(
+  `https://api.ipdata.co/${userIP}?api-key=${process.env.IP_DATA_API_KEY}`
+);
+```
 
 ### Markers
 
@@ -88,7 +100,9 @@ const ratioToColor = useCallback((advertised: number, download: number) => {
 
 #### Clustering
 
-The markers are clustered using the `react-google-maps` library. The `MarkerClusterer` component groups the markers based on the zoom level of the map.
+The markers are clustered using the `react-google-maps` library. The
+`MarkerClusterer` component groups the markers based on the zoom level of the
+map.
 
 ### Filtering
 
@@ -112,5 +126,5 @@ from Aceternity UI.
 
 It was surprisingly difficult to maintain state between the dropdown menu and
 the map markers. The markers were not updating correctly when the dropdown menu
-was changed. With help from ChatGPT, the issue was resolved by using memoization to prevent unnecessary
-re-renders.
+was changed. With help from ChatGPT, the issue was resolved by using memoization
+to prevent unnecessary re-renders.

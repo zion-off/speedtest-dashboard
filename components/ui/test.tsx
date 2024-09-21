@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea";
 import SpeedTest from "../wrapper/SpeedTest";
 import { Loader2 } from "lucide-react";
 import { companies } from "@/data/isp";
@@ -55,6 +55,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   const [serverLocation, setServerLocation] = useState<ServerLocation | null>(
     null
   );
+  const [userISP, setUserISP] = useState<string>("");
 
   const [formData, setFormData] = useState<SpeedPointFormData>({
     isp: "",
@@ -90,6 +91,13 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
+      isp: userISP,
+    }));
+  }, [userISP]);
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
       download: downloadSpeed,
       upload: uploadSpeed,
     }));
@@ -103,11 +111,11 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   };
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData({ 
+    setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.name;
@@ -148,9 +156,9 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4 py-4">
-        <Select onValueChange={handleISPChange}>
+        <Select value={formData.isp} onValueChange={handleISPChange}>
           <SelectTrigger className="col-span-3">
-            <SelectValue placeholder="Your ISP" />
+            <SelectValue placeholder="Start speed test to auto-detect your ISP" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -196,6 +204,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
             setDownload={setDownloadSpeed}
             setUpload={setUploadSpeed}
             setServer={setServerLocation}
+            setUserISP={setUserISP}
           />
         </div>
         <Textarea
