@@ -14,7 +14,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -22,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import SpeedTest from "../wrapper/SpeedTest";
 import { Loader2 } from "lucide-react";
-import { companies } from "@/data/isp";
+import { fetchCompanies } from "@/data/isp";
 import React, { useState, useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -56,6 +55,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
     null
   );
   const [userISP, setUserISP] = useState<string>("");
+  const [companies, setCompanies] = useState<string[]>([]);
 
   const [formData, setFormData] = useState<SpeedPointFormData>({
     isp: "",
@@ -65,6 +65,10 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
     lat: null,
     lng: null,
   });
+
+  useEffect(() => {
+    fetchCompanies().then((companies) => setCompanies(companies));
+  }, []);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -89,11 +93,30 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   }, []);
 
   useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      isp: userISP,
-    }));
-  }, [userISP]);
+    const updateISP = async () => {
+      if (userISP) {
+        const currentCompanies = await fetchCompanies(); 
+  
+        if (!currentCompanies.includes(userISP)) {
+          try {
+            const companiesCollection = collection(db, "companies");
+            await addDoc(companiesCollection, { name: userISP });
+            setCompanies((prevCompanies) => [...prevCompanies, userISP]);
+          } catch (error) {
+            console.error("Error adding new ISP to Firestore:", error);
+          }
+        }
+  
+        setFormData((prevData) => ({
+          ...prevData,
+          isp: userISP,
+        }));
+      }
+    };
+  
+    updateISP();
+  }, [userISP]); 
+  
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -103,19 +126,35 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
     }));
   }, [downloadSpeed, uploadSpeed]);
 
-  const handleISPChange = (value: string) => {
+  const handleISPChange = async (value: string) => {
+    console.log(`handleISPChange triggered with value: ${value}`);
     if (!companies.includes(value)) {
-      setFormData((prevData) => ({
-        ...prevData,
-        isp: value,
-      }));
+      try {
+        // Add the new ISP to Firestore if it's not already in the list
+        const companiesCollection = collection(db, "companies");
+        await addDoc(companiesCollection, { name: value });
+        
+        // Update the local state to reflect the new company added
+        setCompanies((prevCompanies) => [...prevCompanies, value]);
+        
+        setFormData((prevData) => ({
+          ...prevData,
+          isp: value,
+        }));
+        
+        console.log(`Added new ISP: ${value} to Firestore`);
+      } catch (error) {
+        console.error("Error adding new ISP to Firestore:", error);
+      }
     } else {
+      console.log(`ISP: ${value} already exists in Firestore`);
       setFormData((prevData) => ({
         ...prevData,
         isp: value,
       }));
     }
   };
+  
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFormData({

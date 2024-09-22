@@ -50,6 +50,8 @@ const response = await fetch(
 );
 ```
 
+There's a default list of ISPs in Firestore. If a new ISP is detected, the database is automatically updated, and this new ISP is added to the dropdown menu for future submissions.
+
 ### Markers
 
 #### Colors
