@@ -2,12 +2,30 @@
 import React from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { ShootingStars } from "@/components/ui/shooting-stars";
-import { StarsBackground } from "@/components/ui/stars-background";
 
 const World = dynamic(() => import("../ui/globe").then((m) => m.World), {
   ssr: false,
 });
+
+const ShootingStars = dynamic(
+  () =>
+    import("@/components/ui/shooting-stars").then((mod) => mod.ShootingStars),
+  {
+    ssr: false,
+    loading: () => <></>,
+  }
+);
+
+const StarsBackground = dynamic(
+  () =>
+    import("@/components/ui/stars-background").then(
+      (mod) => mod.StarsBackground
+    ),
+  {
+    ssr: false,
+    loading: () => <></>,
+  }
+);
 
 export function GlobeDemo() {
   const globeConfig = {
@@ -430,10 +448,9 @@ export function GlobeDemo() {
           }}
         />
         <div className="relative w-full h-full md:h-full z-10">
-  <World data={sampleArcs} globeConfig={globeConfig} />
-  <div className="absolute inset-0 z-20 md:hidden" />
-</div>
-
+          <World data={sampleArcs} globeConfig={globeConfig} />
+          <div className="absolute inset-0 z-20 md:hidden" />
+        </div>
       </div>
       <ShootingStars />
       <StarsBackground />

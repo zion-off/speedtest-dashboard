@@ -5,11 +5,9 @@ import React, {
   useEffect,
   Dispatch,
   SetStateAction,
-  use,
 } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
 
 interface ServerLocation {

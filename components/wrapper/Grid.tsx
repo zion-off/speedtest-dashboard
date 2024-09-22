@@ -3,11 +3,8 @@
 import React from "react";
 import { IoGlobe } from "react-icons/io5";
 import MagicButton from "../ui/MagicButton";
-import { BackgroundGradientAnimation } from "../ui/background-gradient-animation";
 import {
   GlowingStarsBackgroundCard,
-  GlowingStarsDescription,
-  GlowingStarsTitle,
 } from "../ui/glowing-stars";
 
 const Grid = () => {
