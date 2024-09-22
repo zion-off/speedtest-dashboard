@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, Dispatch, SetStateAction } from "react";
+import React, {
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  use,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -36,13 +42,36 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
   const [error, setError] = useState("");
   const [progress, setProgress] = useState(0); // State variable for progress
 
+  const fetchUserISP = async () => {
+    try {
+      const response = await fetch(
+        `https://ipinfo.io/json?token=${process.env.NEXT_PUBLIC_IP_INFO_API_KEY}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch ISP info.");
+      }
+      const data = await response.json();
+      return data.org.split(" ").slice(1).join(" ");
+    } catch (err) {
+      console.error("Error fetching ISP info:", err);
+      return "Unknown ISP";
+    }
+  };
+
+  useEffect(() => {
+    const fetchISP = async () => {
+      const userISP = await fetchUserISP();
+      setUserISP(userISP);
+    };
+    fetchISP();
+  }, []);
+
   const runSpeedTest = async () => {
     setIsLoading(true);
     setError("");
     setProgress(0); // Reset progress at the start
 
     try {
-      // Download speed test with progress updates
       const downloadStart = Date.now();
       const downloadInterval = setInterval(() => {
         setProgress((prev) => Math.min(prev + 1, 50)); // Increment by 1% until 50%
@@ -64,11 +93,6 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       // Set server location and test data
       setServerLocation(downloadData.serverLocation);
       setServer(downloadData.serverLocation);
-
-      // Fetch user ISP
-      const ispResponse = await fetch("/api/speedtest?type=isp");
-      const ispData = await ispResponse.json();
-      setUserISP(ispData.userISP);
 
       // Upload speed test with progress updates
       const uploadData = { testData: downloadData.testData };
@@ -104,7 +128,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       setError("Failed to run speed test. Please try again.");
     } finally {
       setIsLoading(false);
-      // setTimeout(() => setProgress(100), 500); 
+      // setTimeout(() => setProgress(100), 500);
     }
   };
 
@@ -127,7 +151,6 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
         ) : (
           "Start Speed Test"
         )}
-        
       </Button>
 
       {error && <p className="text-red-500 mb-2">{error}</p>}

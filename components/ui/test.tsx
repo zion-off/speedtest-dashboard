@@ -56,6 +56,13 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   );
   const [userISP, setUserISP] = useState<string>("");
   const [companies, setCompanies] = useState<string[]>([]);
+  const [ispInputText, setISPInputText] = useState("Detecting ISP...");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setISPInputText("Select ISP");
+    }, 5000);
+  });
 
   const [formData, setFormData] = useState<SpeedPointFormData>({
     isp: "",
@@ -95,8 +102,8 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   useEffect(() => {
     const updateISP = async () => {
       if (userISP) {
-        const currentCompanies = await fetchCompanies(); 
-  
+        const currentCompanies = await fetchCompanies();
+
         if (!currentCompanies.includes(userISP)) {
           try {
             const companiesCollection = collection(db, "companies");
@@ -106,17 +113,16 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
             console.error("Error adding new ISP to Firestore:", error);
           }
         }
-  
+
         setFormData((prevData) => ({
           ...prevData,
           isp: userISP,
         }));
       }
     };
-  
+
     updateISP();
-  }, [userISP]); 
-  
+  }, [userISP]);
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -133,15 +139,15 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
         // Add the new ISP to Firestore if it's not already in the list
         const companiesCollection = collection(db, "companies");
         await addDoc(companiesCollection, { name: value });
-        
+
         // Update the local state to reflect the new company added
         setCompanies((prevCompanies) => [...prevCompanies, value]);
-        
+
         setFormData((prevData) => ({
           ...prevData,
           isp: value,
         }));
-        
+
         console.log(`Added new ISP: ${value} to Firestore`);
       } catch (error) {
         console.error("Error adding new ISP to Firestore:", error);
@@ -154,7 +160,6 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
       }));
     }
   };
-  
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFormData({
@@ -204,7 +209,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
       <div className="flex flex-col gap-4 py-4">
         <Select value={formData.isp} onValueChange={handleISPChange}>
           <SelectTrigger className="col-span-3">
-            <SelectValue placeholder="Start speed test to auto-detect your ISP" />
+            <SelectValue placeholder={ispInputText} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>

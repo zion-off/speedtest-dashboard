@@ -40,17 +40,22 @@ compatible with the Next.js serverless environment.
 
 ### ISP Detection
 
-The user's ISP is detected using the [ipinfo.io](https://ipinfo.io) API.
+The user's ISP is detected using the [ipinfo.io](https://ipinfo.io/) API.
 
 ```ts
-const userIP =
-  request.ip || request.headers.get("x-forwarded-for")?.split(",")[0] || "";
 const response = await fetch(
-  `https://api.ipdata.co/${userIP}?api-key=${process.env.IP_DATA_API_KEY}`
+  `https://ipinfo.io/json?token=${process.env.NEXT_PUBLIC_IP_INFO_API_KEY}`
 );
+if (!response.ok) {
+  throw new Error("Failed to fetch ISP info.");
+}
+const data = await response.json();
+return data.org.split(" ").slice(1).join(" ");
 ```
 
-There's a default list of ISPs in Firestore. If a new ISP is detected, the database is automatically updated, and this new ISP is added to the dropdown menu for future submissions.
+There's a default list of ISPs in Firestore. If a new ISP is detected, the
+database is automatically updated, and this new ISP is added to the dropdown
+menu for future submissions.
 
 ### Markers
 
