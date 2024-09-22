@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
   const responseType = searchParams.get("type"); // Determines the type of response
 
   if (responseType === "test") {
-    const testData = generateRandomData(25000000); // 25 MB
+    const testData = generateRandomData(30000000); // 25 MB
     const serverLocation = await getServerLocation();
     return NextResponse.json({ testData, serverLocation });
   } else if (responseType === "isp") {
