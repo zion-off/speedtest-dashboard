@@ -110,6 +110,7 @@ export const companies = [
   "Networking",
   "Nexus Telecom Limited",
   "Ollo Broadband",
+  "OptiMax Communication Ltd.",
   "Pioneer Services Ltd.",
   "Prefix Net",
   "RM Communication Limited",
