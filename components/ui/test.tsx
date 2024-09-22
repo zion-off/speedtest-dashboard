@@ -104,10 +104,17 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
   }, [downloadSpeed, uploadSpeed]);
 
   const handleISPChange = (value: string) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      isp: value,
-    }));
+    if (!companies.includes(value)) {
+      setFormData((prevData) => ({
+        ...prevData,
+        isp: value,
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        isp: value,
+      }));
+    }
   };
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -162,13 +169,16 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {companies.map((isp) => {
-                return (
-                  <SelectItem key={isp} value={isp}>
-                    {isp}
-                  </SelectItem>
-                );
-              })}
+              {companies.map((isp) => (
+                <SelectItem key={isp} value={isp}>
+                  {isp}
+                </SelectItem>
+              ))}
+              {userISP && !companies.includes(userISP) && (
+                <SelectItem key="custom" value={userISP}>
+                  {userISP}
+                </SelectItem>
+              )}
             </SelectGroup>
           </SelectContent>
         </Select>

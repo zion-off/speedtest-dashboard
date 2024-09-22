@@ -97,7 +97,7 @@ export const companies = [
   "M/s. Solution.",
   "M/s.Computer Complex Network",
   "Mango Teleservices Ltd.",
-  "Match Net",
+  // "Match Net",
   "Mazeda Networks Ltd.",
   "MetroNet Bangladesh Limited",
   "Microlink Technology",

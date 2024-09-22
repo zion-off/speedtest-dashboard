@@ -25,12 +25,15 @@ async function getServerLocation() {
 
 async function getUserISP(request: NextRequest) {
   try {
-    const userIP =
+    let userIP =
       request.headers.get("CF-Connecting-IP") ||
       request.headers.get("x-forwarded-for")?.split(",")[0] ||
       request.ip;
 
-    console.log("Detected User IP:", userIP); // Log the detected IP
+    if (process.env.TEST_IP) {
+      console.log("Using test IP:", process.env.TEST_IP);
+      userIP = process.env.TEST_IP;
+    }
 
     const response = await fetch(
       `https://api.ipdata.co/${userIP}?api-key=${process.env.IP_DATA_API_KEY}`
@@ -46,7 +49,6 @@ async function getUserISP(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log("ISP Data:", data); // Log the ISP data
     return data.asn.name;
   } catch (error) {
     console.error("Error fetching user ISP:", error);
