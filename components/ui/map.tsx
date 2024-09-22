@@ -181,7 +181,7 @@ const MemoizedMarker = React.memo(
           onClose={() => setOpenInfoWindowKey(null)}
           onCloseClick={() => setOpenInfoWindowKey(null)}
         >
-            <div className="p-4 text-slate-200">
+            <div className="p-4 text-slate-200 md:max-w-72">
             <h3 className="font-bold text-lg">{point.isp}</h3>
             <p><span className="font-semibold">Advertised speed:</span> {point.advertised} Mbps</p>
             <p><span className="font-semibold">Measured download speed:</span> {point.download} Mbps</p>

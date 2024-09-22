@@ -209,6 +209,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <Textarea
           name="note"
+          maxLength={240}
           value={formData.note || ""}
           onChange={handleNoteChange}
           required

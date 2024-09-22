@@ -61,6 +61,7 @@ export const companies = [
   "Galaxy Net",
   "Gateway Online Access Ltd",
   "Generation Net Limited",
+  "Hashtag Broadband",
   "HM Communication",
   "IT Base",
   "IT Connect Ltd",
