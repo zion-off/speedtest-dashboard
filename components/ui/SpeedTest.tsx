@@ -148,7 +148,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       formData.append("file", downloadData, "test-file.bin"); // Upload the downloaded data
 
       // POST request to the dummy API
-      await fetch("https://file.io", {
+      await fetch("speed-test-upload.zzzzion.workers.dev", {
         method: "POST",
         body: formData,
       });
