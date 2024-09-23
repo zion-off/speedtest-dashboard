@@ -7,8 +7,12 @@ import { TestForm } from "@/components/ui/testForm";
 import { SpeedPoint } from "@/data/speed";
 
 const Dashboard = () => {
+  // State to check if the test form is open
+  // Updates the map if a new test is submitted
   const [open, setOpen] = useState<boolean>(false);
+  // State for filtering ISPs
   const [selectedISPs, setSelectedISPs] = useState<string[]>([]);
+  // Speed points to be displayed on the map
   const [speeds, setSpeeds] = useState<SpeedPoint[]>([]);
 
   // using useCallback to prevent unnecessary re-renders

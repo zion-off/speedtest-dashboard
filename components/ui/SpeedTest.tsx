@@ -1,11 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
@@ -67,66 +62,69 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
   const runSpeedTest = async () => {
     setIsLoading(true);
     setError("");
-    setProgress(0); // Reset progress at the start
+    setProgress(0);
 
     try {
+      // ----------------- Download Test -----------------
       const downloadStart = Date.now();
       const downloadInterval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 1, 50)); // Increment by 1% until 50%
-      }, 200); // Updates every 100ms
+        setProgress((prev) => Math.min(prev + 1, 50)); // Increment progress up to 50%
+      }, 200);
 
-      const downloadResponse = await fetch("/api/speedtest?type=test");
-      const downloadData = await downloadResponse.json();
-      clearInterval(downloadInterval); // Clear the interval when done
+      const response = await fetch(
+        `https://speed-test-files.zzzzion.com/data-30-mb.txt?timestamp=${Date.now()}`
+      );
+      const downloadData = await response.blob(); // Get the file as a Blob
+
+      clearInterval(downloadInterval);
       const downloadEnd = Date.now();
-      const downloadDuration = (downloadEnd - downloadStart) / 1000; // seconds
+      const downloadDuration = (downloadEnd - downloadStart) / 1000;
+
+      // Convert the blob size to Mbps
       const downloadSpeed = (
-        downloadData.testData.length /
+        downloadData.size /
         downloadDuration /
         125000
-      ).toFixed(2); // Mbps
+      ).toFixed(2);
 
       setProgress(50);
+      setDownload(parseFloat(downloadSpeed));
 
-      // Set server location and test data
-      setServerLocation(downloadData.serverLocation);
-      setServer(downloadData.serverLocation);
-
-      // Upload speed test with progress updates
-      const uploadData = { testData: downloadData.testData };
+      // ----------------- Upload Test -----------------
       const uploadStart = Date.now();
       const uploadInterval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 1, 100)); // Increment by 1% until 100%
-      }, 100); // Updates every 100ms
+        setProgress((prev) => Math.min(prev + 1, 100)); // Increment progress to 100%
+      }, 100);
 
-      await fetch("/api/speedtest", {
+      // Dummy upload to a public API (simulates upload)
+      const formData = new FormData();
+      formData.append("file", downloadData, "test-file.bin"); // Upload the downloaded data
+
+      // POST request to the dummy API
+      await fetch("https://file.io", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(uploadData),
+        body: formData,
       });
+
       const uploadEnd = Date.now();
-      clearInterval(uploadInterval); // Clear the interval when done
+      clearInterval(uploadInterval);
 
-      const uploadDuration = (uploadEnd - uploadStart) / 1000; // seconds
-      const uploadSpeed = (
-        uploadData.testData.length /
-        uploadDuration /
-        125000
-      ).toFixed(2); // Mbps
+      const uploadDuration = (uploadEnd - uploadStart) / 1000;
+      const uploadSpeed = (downloadData.size / uploadDuration / 125000).toFixed(
+        2
+      );
 
-      setProgress(100); // Set progress to 100% after upload completes
-
+      setProgress(100);
       setResults({
         downloadSpeed: parseFloat(downloadSpeed),
         uploadSpeed: parseFloat(uploadSpeed),
       });
-      setDownload(parseFloat(downloadSpeed));
+
       setUpload(parseFloat(uploadSpeed));
     } catch (err) {
       setError("Failed to run speed test. Please try again.");
     } finally {
       setIsLoading(false);
-      // setTimeout(() => setProgress(100), 500);
     }
   };
 
