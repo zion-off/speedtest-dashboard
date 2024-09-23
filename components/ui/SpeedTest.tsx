@@ -52,7 +52,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
     ipAddress: string
   ): Promise<ServerLocation | null> {
     try {
-      const response = await fetch(`http://ip-api.com/json/${ipAddress}`);
+      const response = await fetch(`https://ip-api.com/json/${ipAddress}`);
       const data = await response.json();
       if (data.status === "fail") {
         throw new Error(data.message);
