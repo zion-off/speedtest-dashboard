@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import MapBox from "@/components/ui/map";
 import SearchBar from "@/components/ui/search";
-import { TestForm } from "@/components/ui/test";
+import { TestForm } from "@/components/ui/testForm";
 import { SpeedPoint } from "@/data/speed";
 
 const Dashboard = () => {

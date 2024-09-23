@@ -19,14 +19,14 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import SpeedTest from "../wrapper/SpeedTest";
+import SpeedTest from "./SpeedTest";
 import { Loader2 } from "lucide-react";
 import { fetchCompanies } from "@/data/isp";
 import React, { useState, useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase";
 
-type SpeedPointFormData = {
+type FormData = {
   isp: string;
   advertised: number;
   download: number;
@@ -45,7 +45,7 @@ interface ServerLocation {
   isp: string;
 }
 
-function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
+function Form({ onSuccess }: { onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -64,7 +64,7 @@ function SpeedPointForm({ onSuccess }: { onSuccess: () => void }) {
     }, 5000);
   });
 
-  const [formData, setFormData] = useState<SpeedPointFormData>({
+  const [formData, setFormData] = useState<FormData>({
     isp: "",
     advertised: 0,
     download: downloadSpeed,
@@ -352,7 +352,7 @@ export function TestForm({
             Help your local community pick the best ISP in your area
           </DialogDescription>
         </DialogHeader>
-        <SpeedPointForm onSuccess={handleSuccess} />
+        <Form onSuccess={handleSuccess} />
       </DialogContent>
     </Dialog>
   );

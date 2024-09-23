@@ -73,7 +73,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       const downloadStart = Date.now();
       const downloadInterval = setInterval(() => {
         setProgress((prev) => Math.min(prev + 1, 50)); // Increment by 1% until 50%
-      }, 100); // Updates every 100ms
+      }, 200); // Updates every 100ms
 
       const downloadResponse = await fetch("/api/speedtest?type=test");
       const downloadData = await downloadResponse.json();
@@ -86,7 +86,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
         125000
       ).toFixed(2); // Mbps
 
-      setProgress(50); // Set progress to 50% after download completes
+      setProgress(50);
 
       // Set server location and test data
       setServerLocation(downloadData.serverLocation);

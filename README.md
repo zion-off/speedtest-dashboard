@@ -30,7 +30,7 @@ export type SpeedPoint = {
 
 ### Speed Test
 
-User's network speed is testing by generating dummy 10 MB data using a Next.js
+User's network speed is testing by generating dummy 25 MB data using a Next.js
 API route. The frontend requests the speed test endpoint, and measures the time
 it takes to download the data. It then uploads the same data back to the server
 to measure the upload speed.
