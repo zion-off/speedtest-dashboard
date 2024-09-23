@@ -1,11 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
@@ -68,67 +63,96 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
     setIsLoading(true);
     setError("");
     setProgress(0); // Reset progress at the start
-
+  
     try {
+      // Download speed test
       const downloadStart = Date.now();
+      console.log("Starting download...");
+  
       const downloadInterval = setInterval(() => {
         setProgress((prev) => Math.min(prev + 1, 50)); // Increment by 1% until 50%
       }, 100); // Updates every 100ms
-
+  
       const downloadResponse = await fetch("/api/speedtest?type=test");
-      const downloadData = await downloadResponse.json();
+  
+      // Ensure the response body is available for streaming
+      if (!downloadResponse.body) throw new Error("Download stream failed");
+  
+      const reader = downloadResponse.body.getReader();
+      let receivedLength = 0;
+      const chunks = [];
+  
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          console.log("Download complete, all chunks received");
+          break;
+        }
+  
+        if (value) {
+          chunks.push(value);
+          receivedLength += value.length;
+          console.log(`Received chunk of size: ${value.length}, Total: ${receivedLength}`);
+        }
+      }
+  
       clearInterval(downloadInterval); // Clear the interval when done
       const downloadEnd = Date.now();
       const downloadDuration = (downloadEnd - downloadStart) / 1000; // seconds
-      const downloadSpeed = (
-        downloadData.testData.length /
-        downloadDuration /
-        125000
-      ).toFixed(2); // Mbps
-
+      const downloadSpeed = (receivedLength / downloadDuration / 125000).toFixed(2); // Mbps
+  
       setProgress(50); // Set progress to 50% after download completes
-
-      // Set server location and test data
-      setServerLocation(downloadData.serverLocation);
-      setServer(downloadData.serverLocation);
-
-      // Upload speed test with progress updates
-      const uploadData = { testData: downloadData.testData };
+      console.log(`Download completed in ${downloadDuration} seconds at ${downloadSpeed} Mbps`);
+  
+      // Convert chunks into a single Uint8Array
+      const downloadData = new Uint8Array(receivedLength);
+      let position = 0;
+      for (const chunk of chunks) {
+        downloadData.set(chunk, position);
+        position += chunk.length;
+      }
+  
+      // Prepare upload data
+      const uploadData = { testData: Array.from(downloadData) }; // Convert to array for JSON serialization
       const uploadStart = Date.now();
       const uploadInterval = setInterval(() => {
         setProgress((prev) => Math.min(prev + 1, 100)); // Increment by 1% until 100%
       }, 100); // Updates every 100ms
-
-      await fetch("/api/speedtest", {
+  
+      const uploadResponse = await fetch("/api/speedtest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(uploadData),
       });
+  
+      if (!uploadResponse.ok) throw new Error("Upload failed");
+  
       const uploadEnd = Date.now();
       clearInterval(uploadInterval); // Clear the interval when done
-
+  
       const uploadDuration = (uploadEnd - uploadStart) / 1000; // seconds
-      const uploadSpeed = (
-        uploadData.testData.length /
-        uploadDuration /
-        125000
-      ).toFixed(2); // Mbps
-
+      const uploadSpeed = (receivedLength / uploadDuration / 125000).toFixed(2); // Mbps
+  
       setProgress(100); // Set progress to 100% after upload completes
-
+      console.log(`Upload completed in ${uploadDuration} seconds at ${uploadSpeed} Mbps`);
+  
+      // Set final results
       setResults({
         downloadSpeed: parseFloat(downloadSpeed),
         uploadSpeed: parseFloat(uploadSpeed),
       });
       setDownload(parseFloat(downloadSpeed));
       setUpload(parseFloat(uploadSpeed));
+  
     } catch (err) {
+      console.error("Error during speed test:", err);
       setError("Failed to run speed test. Please try again.");
     } finally {
       setIsLoading(false);
-      // setTimeout(() => setProgress(100), 500);
     }
   };
+  
+  
 
   return (
     <Card className="w-full max-w-md mx-auto">

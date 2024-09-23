@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Generate a string of random data
-function generateRandomData(size: number): string {
-  return Array(size).fill("0").join("");
-}
-
 async function getServerLocation() {
   try {
     const response = await fetch("http://ip-api.com/json/");
@@ -23,39 +18,6 @@ async function getServerLocation() {
   }
 }
 
-async function getUserISP(request: NextRequest) {
-  try {
-    let userIP =
-      request.headers.get("CF-Connecting-IP") ||
-      request.headers.get("x-forwarded-for")?.split(",")[0] ||
-      request.ip;
-
-    if (process.env.TEST_IP) {
-      console.log("Using test IP:", process.env.TEST_IP);
-      userIP = process.env.TEST_IP;
-    }
-
-    const response = await fetch(
-      `https://api.ipdata.co/${userIP}?api-key=${process.env.IP_DATA_API_KEY}`
-    );
-
-    if (!response.ok) {
-      console.error(
-        "Failed to fetch ISP:",
-        response.status,
-        await response.text()
-      );
-      return null;
-    }
-
-    const data = await response.json();
-    return data.asn.name;
-  } catch (error) {
-    console.error("Error fetching user ISP:", error);
-    return null;
-  }
-}
-
 // Function to set CORS headers
 const setCorsHeaders = (res: NextResponse) => {
   res.headers.set(
@@ -69,49 +31,103 @@ const setCorsHeaders = (res: NextResponse) => {
   );
 };
 
+// Helper function to generate random data
+function generateRandomData(size: number): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < size; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 export async function GET(request: NextRequest) {
-  const res = NextResponse.json({}); // Initialize response
+  // Set CORS headers (optional, if needed)
+  const headers = new Headers({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  });
 
-  // Set CORS headers
-  setCorsHeaders(res);
-
-  // Handle preflight request
   if (request.method === "OPTIONS") {
-    return res; // Return an empty response for preflight
+    // Handle preflight request
+    return new NextResponse(null, { status: 204, headers });
   }
 
   const { searchParams } = new URL(request.url);
-  const responseType = searchParams.get("type"); // Determines the type of response
+  const responseType = searchParams.get("type");
 
   if (responseType === "test") {
-    const testData = generateRandomData(30000000); // 25 MB
+    const encoder = new TextEncoder();
     const serverLocation = await getServerLocation();
-    return NextResponse.json({ testData, serverLocation });
-  } else if (responseType === "isp") {
-    const userISP = await getUserISP(request);
-    return NextResponse.json({ userISP });
+    const startTime = Date.now(); // Measure request start time
+
+    // Streaming response
+    const stream = new ReadableStream({
+      start(controller) {
+        // Stream 1MB chunks for a total of 25 MB
+        for (let i = 0; i < 25; i++) {
+          const chunk = generateRandomData(1000000); // 1 MB chunk
+          controller.enqueue(encoder.encode(chunk));
+        }
+        controller.close();
+      }
+    });
+
+    const responseTime = Date.now(); // Measure response end time
+
+    return new NextResponse(stream, {
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'X-Server-Location': JSON.stringify(serverLocation),
+        'X-Start-Time': startTime.toString(),
+        'X-Response-Time': responseTime.toString(),
+      }
+    });
   } else {
     // Return an error for invalid request type
-    return NextResponse.json(
-      { error: "Invalid request type" },
-      { status: 400 }
+    return new NextResponse(
+      JSON.stringify({ error: "Invalid request type" }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }
 
 export async function POST(request: NextRequest) {
-  const res = NextResponse.json({}); // Initialize response
+  // Set up response
+  const res = NextResponse.json({});
 
   // Set CORS headers
   setCorsHeaders(res);
 
-  // Handle preflight request
+  // Handle preflight request (OPTIONS)
   if (request.method === "OPTIONS") {
-    return res; // Return an empty response for preflight
+    return NextResponse.json(null, { status: 204 });
   }
 
-  const body = await request.json();
-  const { testData } = body;
+  // Parse incoming JSON data
+  try {
+    const body = await request.json();
+    const { testData } = body;
 
-  return NextResponse.json({ success: true });
+    // If testData is large, confirm its receipt and success
+    if (testData && testData.length > 0) {
+      return NextResponse.json({
+        success: true,
+        receivedSize: `${(testData.length / 1_000_000).toFixed(2)} MB`
+      });
+    } else {
+      return NextResponse.json({
+        success: false,
+        error: 'No data received'
+      }, { status: 400 });
+    }
+  } catch (error) {
+    // Handle error in parsing JSON body
+    return NextResponse.json({
+      success: false,
+      error: 'Failed to parse request body',
+    }, { status: 500 });
+  }
 }
+
