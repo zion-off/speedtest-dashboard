@@ -30,6 +30,40 @@ export type SpeedPoint = {
 
 ### Speed Test
 
+A 30 MB file is hosted on a GitHub Pages site with a custom domain. The custom
+domain allows CORS requests, which is necessary for the speed test to work.
+
+```ts
+const response = await fetch(
+  `https://speed-test-files.zzzzion.com/data-30-mb.txt?timestamp=${Date.now()}`
+);
+const downloadData = await response.blob(); // Get the file as a Blob
+```
+
+The fetch request is timed to measure the download speed.
+
+The same file is then uploaded to a Cloudflare Worker, hosted at
+[speed-test-upload.zzzzion.workers.dev](https://speed-test-upload.zzzzion.workers.dev/).
+
+```js
+addEventListener("fetch", (event) => {
+  event.respondWith(handleRequest(event.request));
+});
+
+async function handleRequest(request) {
+  if (request.method === "POST") {
+    const formData = await request.formData();
+    const file = formData.get("file");
+    return new Response("File uploaded and processed", { status: 200 });
+  }
+  return new Response("Method not allowed", { status: 405 });
+}
+```
+
+This measures the time it takes to upload the file to Cloudflare's Edge network.
+
+#### Old method
+
 User's network speed is testing by generating dummy 25 MB data using a Next.js
 API route. The frontend requests the speed test endpoint, and measures the time
 it takes to download the data. It then uploads the same data back to the server

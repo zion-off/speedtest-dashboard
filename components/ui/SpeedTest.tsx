@@ -147,7 +147,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       const formData = new FormData();
       formData.append("file", downloadData, "test-file.bin"); // Upload the downloaded data
 
-      // POST request to the dummy API
+      // POST request to the Cloudflare worker
       await fetch("speed-test-upload.zzzzion.workers.dev", {
         method: "POST",
         body: formData,
