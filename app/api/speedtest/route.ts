@@ -63,40 +63,26 @@ export async function GET(request: NextRequest) {
 
 
 export async function POST(request: NextRequest) {
-  // Set up response
   const res = NextResponse.json({});
 
-  // Set CORS headers
   setCorsHeaders(res);
 
-  // Handle preflight request (OPTIONS)
   if (request.method === "OPTIONS") {
-    return NextResponse.json(null, { status: 204 });
+    return res; 
   }
 
-  // Parse incoming JSON data
   try {
     const body = await request.json();
-    const { testData } = body;
-
-    // If testData is large, confirm its receipt and success
-    if (testData && testData.length > 0) {
-      return NextResponse.json({
-        success: true,
-        receivedSize: `${(testData.length / 1_000_000).toFixed(2)} MB`
-      });
-    } else {
-      return NextResponse.json({
-        success: false,
-        error: 'No data received'
-      }, { status: 400 });
+    if (!body.testData || !Array.isArray(body.testData)) {
+      return NextResponse.json({ error: "Invalid test data format" }, { status: 400 });
     }
+
+    console.log(`Received upload data of size: ${body.testData.length}`);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    // Handle error in parsing JSON body
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to parse request body',
-    }, { status: 500 });
+    console.error("Error handling upload:", error);
+    return NextResponse.json({ error: "Failed to process upload" }, { status: 500 });
   }
 }
+
 

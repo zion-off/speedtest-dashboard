@@ -59,6 +59,8 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
     fetchISP();
   }, []);
 
+  const CHUNK_SIZE = 1 * 1024 * 1024; // 1 MB chunks
+
   const runSpeedTest = async () => {
     setIsLoading(true);
     setError("");
@@ -80,7 +82,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
   
       const reader = downloadResponse.body.getReader();
       let receivedLength = 0;
-      const chunks = [];
+      const downloadChunks = [];
   
       while (true) {
         const { done, value } = await reader.read();
@@ -90,7 +92,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
         }
   
         if (value) {
-          chunks.push(value);
+          downloadChunks.push(value);
           receivedLength += value.length;
           console.log(`Received chunk of size: ${value.length}, Total: ${receivedLength}`);
         }
@@ -107,25 +109,35 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       // Convert chunks into a single Uint8Array
       const downloadData = new Uint8Array(receivedLength);
       let position = 0;
-      for (const chunk of chunks) {
+      for (const chunk of downloadChunks) {
         downloadData.set(chunk, position);
         position += chunk.length;
       }
   
       // Prepare upload data
-      const uploadData = { testData: Array.from(downloadData) }; // Convert to array for JSON serialization
+      const uploadData = Array.from(downloadData); // Ensure it’s an array for JSON serialization
+      const uploadChunks = []; // Renamed to avoid conflict
+  
+      for (let i = 0; i < uploadData.length; i += CHUNK_SIZE) {
+        uploadChunks.push(uploadData.slice(i, i + CHUNK_SIZE));
+      }
+  
       const uploadStart = Date.now();
       const uploadInterval = setInterval(() => {
         setProgress((prev) => Math.min(prev + 1, 100)); // Increment by 1% until 100%
       }, 100); // Updates every 100ms
   
-      const uploadResponse = await fetch("/api/speedtest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(uploadData),
-      });
+      for (const chunk of uploadChunks) {
+        const chunkData = { testData: chunk };
   
-      if (!uploadResponse.ok) throw new Error("Upload failed");
+        const uploadResponse = await fetch("/api/speedtest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(chunkData),
+        });
+  
+        if (!uploadResponse.ok) throw new Error("Upload failed");
+      }
   
       const uploadEnd = Date.now();
       clearInterval(uploadInterval); // Clear the interval when done
@@ -151,6 +163,7 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       setIsLoading(false);
     }
   };
+  
   
   
 
