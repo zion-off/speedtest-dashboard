@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import fs from 'fs';
+import path from 'path';
 
 async function getServerLocation() {
   try {
@@ -31,67 +33,34 @@ const setCorsHeaders = (res: NextResponse) => {
   );
 };
 
-// Helper function to generate random data
-function generateRandomData(size: number): string {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  const charactersLength = characters.length;
-  for (let i = 0; i < size; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
+
 
 export async function GET(request: NextRequest) {
-  // Set CORS headers (optional, if needed)
-  const headers = new Headers({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  });
+  const res = NextResponse.json({});
+
+  setCorsHeaders(res);
 
   if (request.method === "OPTIONS") {
-    // Handle preflight request
-    return new NextResponse(null, { status: 204, headers });
+    return res; 
   }
 
   const { searchParams } = new URL(request.url);
   const responseType = searchParams.get("type");
 
   if (responseType === "test") {
-    const encoder = new TextEncoder();
+    // Path to your pre-generated data file
+    const filePath = path.join(process.cwd(), './public/data.bin');
+
+    // Read the pre-generated data
+    const testData = fs.readFileSync(filePath);
     const serverLocation = await getServerLocation();
-    const startTime = Date.now(); // Measure request start time
-
-    // Streaming response
-    const stream = new ReadableStream({
-      start(controller) {
-        // Stream 1MB chunks for a total of 25 MB
-        for (let i = 0; i < 25; i++) {
-          const chunk = generateRandomData(1000000); // 1 MB chunk
-          controller.enqueue(encoder.encode(chunk));
-        }
-        controller.close();
-      }
-    });
-
-    const responseTime = Date.now(); // Measure response end time
-
-    return new NextResponse(stream, {
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'X-Server-Location': JSON.stringify(serverLocation),
-        'X-Start-Time': startTime.toString(),
-        'X-Response-Time': responseTime.toString(),
-      }
-    });
+    
+    return NextResponse.json({ testData: Array.from(testData), serverLocation });
   } else {
-    // Return an error for invalid request type
-    return new NextResponse(
-      JSON.stringify({ error: "Invalid request type" }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
-    );
+    return NextResponse.json({ error: "Invalid request type" }, { status: 400 });
   }
 }
+
 
 export async function POST(request: NextRequest) {
   // Set up response
