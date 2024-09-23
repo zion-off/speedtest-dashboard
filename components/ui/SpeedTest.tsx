@@ -35,6 +35,43 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
   const [error, setError] = useState("");
   const [progress, setProgress] = useState(0); // State variable for progress
 
+  async function resolveHostname(hostname: string): Promise<string | null> {
+    try {
+      const response = await fetch(
+        `https://dns.google/resolve?name=${hostname}`
+      );
+      const data = await response.json();
+      return data.Answer[0].data;
+    } catch (error) {
+      console.error("Error resolving hostname:", error);
+      return null;
+    }
+  }
+
+  async function getServerLocation(
+    ipAddress: string
+  ): Promise<ServerLocation | null> {
+    try {
+      const response = await fetch(`http://ip-api.com/json/${ipAddress}`);
+      const data = await response.json();
+      if (data.status === "fail") {
+        throw new Error(data.message);
+      }
+
+      return {
+        country: data.country,
+        region: data.regionName,
+        city: data.city,
+        lat: data.lat,
+        lon: data.lon,
+        isp: data.isp,
+      };
+    } catch (error) {
+      console.error("Error fetching server location:", error);
+      return null;
+    }
+  }
+
   const fetchUserISP = async () => {
     try {
       const response = await fetch(
@@ -89,6 +126,16 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
 
       setProgress(50);
       setDownload(parseFloat(downloadSpeed));
+
+      const serverHostname = new URL(response.url).hostname; // Get the hostname
+      const serverIp = await resolveHostname(serverHostname); // Resolve the hostname
+      if (serverIp) {
+        const serverLocation = await getServerLocation(serverIp); // Fetch server location
+        if (serverLocation) {
+          setServerLocation(serverLocation);
+          setServer(serverLocation);
+        }
+      }
 
       // ----------------- Upload Test -----------------
       const uploadStart = Date.now();
