@@ -52,22 +52,22 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
     ipAddress: string
   ): Promise<ServerLocation | null> {
     try {
-      const response = await fetch(`https://ip-api.com/json/${ipAddress}`);
-      const data = await response.json();
-      if (data.status === "fail") {
-        throw new Error(data.message);
+      const response = await fetch('/api/getserverlocation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ipAddress }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch server location');
       }
-
-      return {
-        country: data.country,
-        region: data.regionName,
-        city: data.city,
-        lat: data.lat,
-        lon: data.lon,
-        isp: data.isp,
-      };
+  
+      const data = await response.json();
+      return data.location;
     } catch (error) {
-      console.error("Error fetching server location:", error);
+      console.error(error);
       return null;
     }
   }
