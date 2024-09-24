@@ -4,6 +4,7 @@ import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { BackgroundGradient } from "../ui/background-gradient";
 
 interface ServerLocation {
   country: string;
@@ -186,28 +187,30 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <Button
-        onClick={runSpeedTest}
-        disabled={isLoading}
-        className="w-full bg-gray-700 relative overflow-clip"
-        style={{
-          background: `linear-gradient(to right, #60a5fa ${progress}%, #374151 ${progress}%)`,
-          transition: "background 0.1s ease", // Smooth background change
-        }}
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            <span className="animate-pulse">Running test...</span>
-          </>
-        ) : progress == 100 ? (
-          "Rerun test"
-        ) : (
-          "Start Speed Test"
-        )}
-      </Button>
-    </Card>
+    <BackgroundGradient testRunning={isLoading} className="max-w-sm">
+      <Card className="w-full max-w-md mx-auto border-none">
+        <Button
+          onClick={runSpeedTest}
+          disabled={isLoading}
+          className="border-none w-full bg-gray-700 disabled:opacity-100 relative overflow-clip"
+          // style={{
+          //   background: `linear-gradient(to right, #60a5fa ${progress}%, #374151 ${progress}%)`,
+          //   transition: "background 0.1s ease", // Smooth background change
+          // }}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span className="animate-pulse">Running test...</span>
+            </>
+          ) : progress == 100 ? (
+            "Rerun test"
+          ) : (
+            "Start Speed Test"
+          )}
+        </Button>
+      </Card>
+    </BackgroundGradient>
   );
 };
 
