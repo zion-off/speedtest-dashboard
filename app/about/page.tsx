@@ -21,6 +21,22 @@ const page = () => {
     <div className="text-slate-100 p-10 md:p-20 flex flex-col gap-20 md:w-1/2">
       <Section title="Want to contribute?">
         <p>
+          Enjoyed the platform? Experienced issues? I'd love to hear from you!
+          Email me at{" "}
+          <a
+            href="mailto:hi@zzzzion.com"
+            className="underline underline-offset-4
+            
+            
+            font-semibold animate-shimmer items-center justify-center bg-gradient-to-r from-[rgb(241,245,249)] via-[#1e2631] to-[rgb(241,245,249)] bg-[length:200%_100%] bg-clip-text text-transparent transition-colors focus:outline-none focus:ring-2 hover:text-white duration-300"
+          >
+            hi@zzzzion.com
+          </a>
+          .
+        </p>
+      </Section>
+      <Section title="Want to contribute?">
+        <p>
           See the source code, or contribute on{" "}
           <a
             href="https://github.com/zion-off/speedtest-dashboard"
@@ -68,10 +84,10 @@ const page = () => {
           hard to find an up to date or comprehensive list. But no worries, if
           you want to contribute, email me at{" "}
           <a
-            href="mailto:zion@nyu.edu"
+            href="mailto:hi@zzzzion.com"
             className="underline underline-offset-4"
           >
-            zion@nyu.edu
+            hi@zzzzion.com
           </a>{" "}
           and I'll add your ISP to the list.
         </p>

@@ -48,6 +48,7 @@ interface ServerLocation {
 function Form({ onSuccess }: { onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [speedTestError, setSpeedTestError] = useState<string>("");
   const [success, setSuccess] = useState<string | null>(null);
   const [downloadSpeed, setDownloadSpeed] = useState<number>(0);
   const [uploadSpeed, setUploadSpeed] = useState<number>(0);
@@ -147,13 +148,10 @@ function Form({ onSuccess }: { onSuccess: () => void }) {
           ...prevData,
           isp: value,
         }));
-
-        console.log(`Added new ISP: ${value} to Firestore`);
       } catch (error) {
         console.error("Error adding new ISP to Firestore:", error);
       }
     } else {
-      console.log(`ISP: ${value} already exists in Firestore`);
       setFormData((prevData) => ({
         ...prevData,
         isp: value,
@@ -259,6 +257,7 @@ function Form({ onSuccess }: { onSuccess: () => void }) {
             setUpload={setUploadSpeed}
             setServer={setServerLocation}
             setUserISP={setUserISP}
+            setSpeedTestError={setSpeedTestError}
           />
         </div>
         <Textarea
@@ -270,8 +269,9 @@ function Form({ onSuccess }: { onSuccess: () => void }) {
           placeholder="What do you like about your ISP?"
           className="col-span-3"
         />
-        {error && <div className="text-red-500">{error}</div>}
-        {success && <div className="text-green-500">{success}</div>}
+        {error && <div className="text-red-700 text-sm">{error}</div>}
+        {speedTestError && <div className="text-red-700 text-sm">{speedTestError}</div>}
+        {success && <div className="text-green-700 text-sm">{success}</div>}
         <Button
           type="submit"
           disabled={

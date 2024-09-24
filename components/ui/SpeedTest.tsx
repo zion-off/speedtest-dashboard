@@ -19,6 +19,7 @@ interface SpeedTestProps {
   setUpload: Dispatch<SetStateAction<number>>;
   setServer: Dispatch<SetStateAction<ServerLocation | null>>;
   setUserISP: Dispatch<SetStateAction<string>>;
+  setSpeedTestError: Dispatch<SetStateAction<string>>;
 }
 
 const SpeedTest: React.FC<SpeedTestProps> = ({
@@ -26,13 +27,13 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
   setUpload,
   setServer,
   setUserISP,
+  setSpeedTestError,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState({ downloadSpeed: 0, uploadSpeed: 0 });
   const [serverLocation, setServerLocation] = useState<ServerLocation | null>(
     null
   );
-  const [error, setError] = useState("");
   const [progress, setProgress] = useState(0); // State variable for progress
 
   async function resolveHostname(hostname: string): Promise<string | null> {
@@ -52,18 +53,18 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
     ipAddress: string
   ): Promise<ServerLocation | null> {
     try {
-      const response = await fetch('/api/getserverlocation', {
-        method: 'POST',
+      const response = await fetch("/api/getserverlocation", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ ipAddress }),
       });
-  
+
       if (!response.ok) {
-        throw new Error('Failed to fetch server location');
+        throw new Error("Failed to fetch server location");
       }
-  
+
       const data = await response.json();
       return data.location;
     } catch (error) {
@@ -98,14 +99,14 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
 
   const runSpeedTest = async () => {
     setIsLoading(true);
-    setError("");
+    setSpeedTestError("");
     setProgress(0);
 
     try {
       // ----------------- Download Test -----------------
       const downloadStart = Date.now();
       const downloadInterval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 1, 50)); // Increment progress up to 50%
+        setProgress((prev) => Math.min(prev + 1, 40)); // Increment progress up to 50%
       }, 200);
 
       const response = await fetch(
@@ -127,6 +128,10 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
       setProgress(50);
       setDownload(parseFloat(downloadSpeed));
 
+      const serverInterval = setInterval(() => {
+        setProgress((prev) => Math.min(prev + 1, 60));
+      }, 50);
+
       const serverHostname = new URL(response.url).hostname; // Get the hostname
       const serverIp = await resolveHostname(serverHostname); // Resolve the hostname
       if (serverIp) {
@@ -137,11 +142,13 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
         }
       }
 
+      clearInterval(serverInterval);
+
       // ----------------- Upload Test -----------------
       const uploadStart = Date.now();
       const uploadInterval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 1, 100)); // Increment progress to 100%
-      }, 100);
+        setProgress((prev) => Math.min(prev + 1, 95)); // Increment progress to 100%
+      }, 200);
 
       // Dummy upload to a public API (simulates upload)
       const formData = new FormData();
@@ -152,6 +159,8 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
         method: "POST",
         body: formData,
       });
+
+      setProgress(100);
 
       const uploadEnd = Date.now();
       clearInterval(uploadInterval);
@@ -169,7 +178,8 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
 
       setUpload(parseFloat(uploadSpeed));
     } catch (err) {
-      setError("Failed to run speed test. Please try again.");
+      setSpeedTestError("Failed to run speed test. Reload and try again?");
+      setProgress(0);
     } finally {
       setIsLoading(false);
     }
@@ -191,12 +201,12 @@ const SpeedTest: React.FC<SpeedTestProps> = ({
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             <span className="animate-pulse">Running test...</span>
           </>
+        ) : progress == 100 ? (
+          "Rerun test"
         ) : (
           "Start Speed Test"
         )}
       </Button>
-
-      {error && <p className="text-red-500 mb-2">{error}</p>}
     </Card>
   );
 };
