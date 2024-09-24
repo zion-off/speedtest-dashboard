@@ -168,7 +168,7 @@ function Form({ onSuccess }: { onSuccess: () => void }) {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.name;
-    const value = event.target.value;
+    const value = event.target.type === 'number' ? Number(event.target.value) : event.target.value;
     setFormData((values) => ({ ...values, [name]: value }));
   };
 
