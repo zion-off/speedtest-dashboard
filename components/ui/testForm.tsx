@@ -340,7 +340,7 @@ export function TestForm({
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="font-semibold animate-shimmer items-center justify-center rounded-lg border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 text-slate-300 transition-colors focus:outline-none focus:ring-2  hover:text-white  duration-300"
+          className="font-semibold animate-shimmer items-center justify-center rounded-lg border border-white border-opacity-40 bg-[linear-gradient(110deg,rgb(38,38,38),45%,#f1f5f920,55%,rgb(38,38,38))] bg-[length:200%_100%]  px-6 text-slate-100 transition-colors focus:outline-none focus:ring-2  hover:text-white  duration-300 hover:bg-neutral-800"
         >
           Report your speed
         </Button>

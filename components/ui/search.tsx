@@ -18,7 +18,10 @@ interface SearchBarProps {
   speeds: SpeedPoint[];
 }
 
-export default function SearchBar({ onSelectionChange, speeds }: SearchBarProps) {
+export default function SearchBar({
+  onSelectionChange,
+  speeds,
+}: SearchBarProps) {
   const [checkedItems, setCheckedItems] = useState<{
     [key: string]: Checked;
   }>({});
@@ -65,7 +68,7 @@ export default function SearchBar({ onSelectionChange, speeds }: SearchBarProps)
         <Button
           ref={buttonRef}
           variant="default"
-          className="w-full border border-slate-800 bg-[#000103] px-6 text-slate-300 transition-colors focus:outline-none focus:ring-2  hover:text-white  duration-300 font-semibold"
+          className="w-full border border-white border-opacity-40 bg-gray-400 hover:bg-neutral-800 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 text-slate-100 transition-colors focus:outline-none focus:ring-2  hover:text-white  duration-300 font-semibold"
         >
           Filter by ISP
         </Button>
